@@ -1,0 +1,44 @@
+
+# GPU  0 Profile ID 19 Placements: {0,1,2,3,4,5,6}:1  MIG 1g.10gb
+# GPU  0 Profile ID 20 Placements: {0,1,2,3,4,5,6}:1  MIG 1g.10gb+me
+# GPU  0 Profile ID 14 Placements: {0,2,4}:2          MIG 2g.20gb 
+# GPU  0 Profile ID  9 Placements: {0,4}:4            MIG 3g.40gb
+# GPU  0 Profile ID  5 Placement : {0}:4              MIG 4g.40gb
+# GPU  0 Profile ID  0 Placement : {0}:8              MIG 7g.80gb
+
+# ====== 启动 =========
+
+MPS 相关的指令
+MIG-e806816b-27b9-54dd-87dd-c52b4e695397
+export CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps # Select a location that’s accessible to the given $UID 
+export CUDA_MPS_LOG_DIRECTORY=/tmp/nvidia-log # Select a location that’s accessible to the given $UID
+export CUDA_VISIBLE_DEVICES=0         # 这里以GPU0为例，其他卡类似
+nvidia-smi -i 0 -c EXCLUSIVE_PROCESS  # 让GPU0变为独享模式。
+nvidia-cuda-mps-control -d            # 开启mps服务 
+# ====== 查看 =========
+ps -ef | grep mps                     # 启动成功后能看到相应的进程
+# ====== 停止 =========
+nvidia-smi -i 0 -c DEFAULT       # 让GPU恢复为默认模式。
+echo quit | sudo -E nvidia-cuda-mps-control   # 关闭mps服务   
+
+echo quit | sudo -E  nvidia-cuda-mps-control
+sudo -E nvidia-cuda-mps-control -d && (echo start_server -uid 1002 | sudo -E nvidia-cuda-mps-control) 
+echo  get_server_list | sudo -E nvidia-cuda-mps-control
+
+echo get_active_thread_percentage 946921 | sudo -E nvidia-cuda-mps-control
+MIG 相关命令
+sudo nvidia-smi mig -dci -i 0 -gi 5 -ci 0 &&  sudo nvidia-smi mig -dgi -i 0 -gi 5
+
+
+
+sudo nvidia-smi mig -cgi $1 -C
+sudo nvidia-smi mig -dci -i 0 -gi $1 -ci 0 && sudo nvidia-smi mig -dgi -i 0 -gi $1
+export CUDA_VISIBLE_DEVICES=$uuid
+
+dcgmi group -d 6
+sudo dcgmi dmon -i 0/1 -e 1001,1002,1003,1004,1005 -d 1000
+sudo pkill -f "dcgmi dmon"
+dcgmi discovery -c   
+sudo service nvidia-dcgm stop
+/home/zbw/xcore/xray run -c config.json
+(sudo dcgmi dmon -i 0/5 -e 1001,1002,1003,1004,1005,1006,1007,1008 -d 1000 >> /data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/offline_profile/bert_profile) & CUDA_VISIBLE_DEVICES=MIG-32522c13-1a59-5776-9d30-e0ae7b6a4874 proxychains python /data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/entry.py --config test --model bert && sudo pkill -f "dcgmi dmon"

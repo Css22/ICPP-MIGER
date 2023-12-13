@@ -1,0 +1,84 @@
+import subprocess
+import time
+import re
+Configurations_map = {1: '1g.10gb', 2 : '2g.20gb' , 3: '3g.40gb', 4: '4g.40gb', 7: '7g.80gb'}
+
+def init_mig():
+    for gpu in range(2):
+        cmd = f'./enable_mig.sh {gpu}'
+        p = subprocess.Popen([cmd], shell=True)
+        p.wait()
+   
+def disable_mps():
+    cmd = f'pkill -9 nvidia-cuda-mps'
+    p = subprocess.Popen([cmd], shell=True)
+    p.wait()
+
+def disable_mig():
+    for gpu in range(2):
+        cmd = f'sudo nvidia-smi -i {gpu} -mig 0'
+        p = subprocess.Popen([cmd], shell=True)
+        p.wait()
+
+# def reset_mig(gpu):
+#     cmd = f'sudo nvidia-smi mig -i {gpu} -dci'
+#     # Note: need to make sure the reset is successful
+#     success = False
+#     while not success:
+#         p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+#         p.wait()
+#         read = str(p.stdout.read())
+#         if 'Unable to destroy' not in read:
+#             success = True
+#         else:
+#             print('Trying again...')
+#             time.sleep(0.5)
+#     cmd = f'sudo nvidia-smi mig -i {gpu} -dgi'
+#     p = subprocess.Popen([cmd], shell=True)
+#     p.wait()
+
+def create_ins(gpu, ins):
+    id_map = {'1g.10gb': 19, '2g.20gb': 14, '3g.40gb': 9, '4g.40gb': 5, '7g.80gb': 0}
+    ins_code = id_map[ins]
+    cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code}'
+    p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+    p.wait()
+    read = str(p.stdout.read())
+    ID = re.findall(r'\d+', read)[0]
+    # need to retrieve GPU instance ID from output
+    cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
+    p = subprocess.Popen([cmd], shell=True)
+    p.wait()
+    return ID
+
+def destroy_ins(gpu, ID):
+    cmd = f'sudo nvidia-smi mig -dci -i 0 -gi {ID} -ci 0 && sudo nvidia-smi mig -dgi -i 0 -gi {ID}'
+    p = subprocess.Popen([cmd], shell=True)
+    p.wait()
+
+def create_ins_with_ID(gpu, ins, req_ID):
+    tem_ID_list = []
+    while True:
+        ID = create_ins(gpu, ins)
+        print(ID)
+        if int(ID) == req_ID:
+            for i in tem_ID_list:
+                destroy_ins(gpu, i)
+            return ID
+        else:
+            tem_ID_list.append(ID)
+            
+
+def get_uuid_table():
+
+
+# def do_partition(gpu, partition): # partition is a list of slice # code is partition code, e.g. '0', '1',...
+#     id_map = {1: 19, 2: 14, 3: 9, 4: 5, 7: 0}
+#     ins_code = [str(id_map[k]) for k in partition]
+#     code_str = ','.join(ins_code)
+#     cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {code_str}'
+#     p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+#     p.wait()
+#     cmd = f'sudo nvidia-smi mig -i {gpu} -cci'
+#     p = subprocess.Popen([cmd], shell=True)
+#     p.wait()
