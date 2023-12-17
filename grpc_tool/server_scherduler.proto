@@ -1,55 +1,54 @@
 syntax = "proto3";
 
 
+service SchedulerService {
+    rpc JobState(JobStateMessage) returns (ReplyResult) {
 
+    }
 
+    rpc Predictor(JobCombine) returns (ReplyPrediction) {
 
+    }
 
+    rpc Load(LoadInformation) returns (ReplyResult) {
 
-
-
-
-service MyService {
-  rpc ServerToClientJobMessage(JobMessage) returns (ReplyJob) {
-
-  }
-
-  rpc ServerToClientScheduleMessage (ScheduleMessage) returns (ReplySchedule) {
-
-  }
-
-  rpc ClientServerConfigMessage (ConfigMessage) returns (ReplyConfig) {
-
-  }
+    }
 }
 
+service WorkerService {
+    rpc AccpetJob(JobInformation) returns (ReplyResult) {
 
-
-
-message JobMessage {
-    string type  = 1;
-    string model = 2;
-    string batch = 3;
-    string epoch = 4;
-    string state = 5;
+    }
 }
 
-message ReplyJob {
-    string message = 1;
+message JobStateMessage {
+    string type = 1;
+    int32 JobID = 2;
 }
 
-message ScheduleMessage {
-    string message = 1;
+message ReplyResult {
+    string response = 1;
 }
 
-message ReplySchedule {
-    string message = 1;
+message JobCombine {
+    int32 partition = 1;
+    repeated int32 JobIDs =2;
+    repeated int32 MPSPercentage = 3;
 }
 
-message ConfigMessage {
-    string message = 1;
+message ReplyPrediction {
+    repeated int32 JobIDs =1 ;
+    repeated float Prediction = 2;
 }
 
-message ReplyConfig {
-    string message = 1;
+message LoadInformation {
+    int32 GPU_ID = 1;
+    repeated int32 partition = 2;
+    repeated float load = 3;
+}
+
+message JobInformation {
+    int32 GPU_ID = 1;
+    int32 JobID = 2;
+
 }
