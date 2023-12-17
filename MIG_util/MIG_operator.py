@@ -20,22 +20,22 @@ def disable_mig():
         p = subprocess.Popen([cmd], shell=True)
         p.wait()
 
-# def reset_mig(gpu):
-#     cmd = f'sudo nvidia-smi mig -i {gpu} -dci'
-#     # Note: need to make sure the reset is successful
-#     success = False
-#     while not success:
-#         p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
-#         p.wait()
-#         read = str(p.stdout.read())
-#         if 'Unable to destroy' not in read:
-#             success = True
-#         else:
-#             print('Trying again...')
-#             time.sleep(0.5)
-#     cmd = f'sudo nvidia-smi mig -i {gpu} -dgi'
-#     p = subprocess.Popen([cmd], shell=True)
-#     p.wait()
+def reset_mig(gpu):
+    cmd = f'sudo nvidia-smi mig -i {gpu} -dci'
+    # Note: need to make sure the reset is successful
+    success = False
+    while not success:
+        p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+        p.wait()
+        read = str(p.stdout.read())
+        if 'Unable to destroy' not in read:
+            success = True
+        else:
+            print('Trying again...')
+            time.sleep(0.5)
+    cmd = f'sudo nvidia-smi mig -i {gpu} -dgi'
+    p = subprocess.Popen([cmd], shell=True)
+    p.wait()
 
 def create_ins(gpu, ins):
     id_map = {'1g.10gb': 19, '2g.20gb': 14, '3g.40gb': 9, '4g.40gb': 5, '7g.80gb': 0}
@@ -68,17 +68,16 @@ def create_ins_with_ID(gpu, ins, req_ID):
         else:
             tem_ID_list.append(ID)
             
+def do_partition(gpu, partition): # partition is a list of slice # code is partition code, e.g. '0', '1',...
+    id_map = {1: 19, 2: 14, 3: 9, 4: 5, 7: 0}
+    ins_code = [str(id_map[k]) for k in partition]
+    code_str = ','.join(ins_code)
+    cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {code_str}'
+    p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+    p.wait()
+    cmd = f'sudo nvidia-smi mig -i {gpu} -cci'
+    p = subprocess.Popen([cmd], shell=True)
+    p.wait()
 
-def get_uuid_table():
 
 
-# def do_partition(gpu, partition): # partition is a list of slice # code is partition code, e.g. '0', '1',...
-#     id_map = {1: 19, 2: 14, 3: 9, 4: 5, 7: 0}
-#     ins_code = [str(id_map[k]) for k in partition]
-#     code_str = ','.join(ins_code)
-#     cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {code_str}'
-#     p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
-#     p.wait()
-#     cmd = f'sudo nvidia-smi mig -i {gpu} -cci'
-#     p = subprocess.Popen([cmd], shell=True)
-#     p.wait()

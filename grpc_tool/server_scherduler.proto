@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+
+
+
+
+
+
+
+
+
+service MyService {
+  rpc ServerToClientJobMessage(JobMessage) returns (ReplyJob) {
+
+  }
+
+  rpc ServerToClientScheduleMessage (ScheduleMessage) returns (ReplySchedule) {
+
+  }
+
+  rpc ClientServerConfigMessage (ConfigMessage) returns (ReplyConfig) {
+
+  }
+}
+
+
+
+
+message JobMessage {
+    string type  = 1;
+    string model = 2;
+    string batch = 3;
+    string epoch = 4;
+    string state = 5;
+}
+
+message ReplyJob {
+    string message = 1;
+}
+
+message ScheduleMessage {
+    string message = 1;
+}
+
+message ReplySchedule {
+    string message = 1;
+}
+
+message ConfigMessage {
+    string message = 1;
+}
+
+message ReplyConfig {
+    string message = 1;
+}

@@ -1,15 +1,24 @@
 # import MIG_util.get_uuid
+import sys
+sys.path.append('/data/zbw/MIG/MIG/ATC-MIG')
 import MIG_util.MIG_operator as MIG_operator
+import grpc_tool.grpc_pb2, grpc_tool.grpc_pb2_grpc
+import node.GPU_worker as GPU_worker
+import node.Scheduler as  Scheduler
+import argparse
+# import MIG_util.node_state
 
 
 
-# GI_ID = MIG_operator.create_ins(0, '1g.10gb')
-# MIG_operator.destroy_ins(0, GI_ID)
-# MIG_operator.destroy_ins(0, 13)
-# MIG_operator.destroy_ins(0, 12)
-# MIG_operator.destroy_ins(0, 11)
-MIG_operator.destroy_ins(0, 10)
-# MIG_operator.destroy_ins(0, 9)
-# MIG_operator.destroy_ins(0, 8)
-# MIG_operator.destroy_ins(0, 7)
-# MIG_operator.create_ins_with_ID(0, '1g.10gb', 10)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='simulator')
+    parser.add_argument('--type', choices=['worker','scheduler'], default='worker')
+
+    args = parser.parse_args()
+
+
+    if args.type == 'worker':
+        GPU_worker.client()
+    if args.type == 'scheduler':
+        Scheduler.server()
