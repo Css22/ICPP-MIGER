@@ -10,7 +10,7 @@ def init_mig():
         p.wait()
    
 def disable_mps():
-    cmd = f'pkill -9 nvidia-cuda-mps'
+    cmd = f'sudo pkill -9 nvidia-cuda-mps'
     p = subprocess.Popen([cmd], shell=True)
     p.wait()
 
