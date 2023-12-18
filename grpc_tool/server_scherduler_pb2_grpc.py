@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import server_scherduler_pb2 as server__scherduler__pb2
+import grpc_tool.server_scherduler_pb2 as server__scherduler__pb2
 
 
 class SchedulerServiceStub(object):

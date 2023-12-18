@@ -80,4 +80,22 @@ def do_partition(gpu, partition): # partition is a list of slice # code is parti
     p.wait()
 
 
+def get_uuid(gpu_id):
+    process = subprocess.Popen(['nvidia-smi', '-L'], stdout=subprocess.PIPE, text=True)
+    flag = False
+    UUID_list = []
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+        gpu_pattern = re.compile(rf'GPU {gpu_id}: .* \(UUID: GPU-(.*?)\)')
+        gpu_match = gpu_pattern.search(line)
+        if gpu_match:
+            flag = not flag
+            continue
+        if flag:
+            match = re.search(r'MIG-[\da-fA-F\-]+', line.strip())
+            uuid = match.group()
+            UUID_list.append(uuid)
+    return UUID_list
 

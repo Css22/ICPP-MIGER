@@ -40,22 +40,30 @@
     
 #     print(job_information.response)
 import time
+import subprocess
 import util.MIG_operator as MIG_operator
 import util.MPS_operator as MPS_operator
+import node.GPU_worker as GPU_worker
+
+# MPS_operator.CloseMPS('MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e')
+# MPS_operator.CloseMPS('MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc')
+
+# MIG_operator.destroy_ins(0, 5)
+# MIG_operator.destroy_ins(0, 12)
+# MIG_operator.destroy_ins(0, 13)
+
+ID_1 = MIG_operator.create_ins(0,'1g.10gb')
+GPU_worker.update_uuid(0,ID_1, 'create')
+ID_2 = MIG_operator.create_ins(0,'2g.20gb')
+GPU_worker.update_uuid(0,ID_2, 'create')
+
+process = subprocess.Popen(['nvidia-smi', '-L'], stdout=subprocess.PIPE, text=True)
+result = subprocess.run(['nvidia-smi', '-L'], stdout=subprocess.PIPE)
+output = result.stdout.decode('utf-8')
+print(output)
 
 
-
-# MIG_operator.create_ins(gpu=0, ins='1g.10gb')
-
-# # MIG_operator.create_ins(gpu=0, ins='1g.10gb')
-
-MPS_operator.SetPercentage(UUID='MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e', Percentage=50)
-MPS_operator.SetPercentage(UUID='MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc', Percentage=50)
-# MPS_operator.OpenMPS(UUID='MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e')
-
-# MPS_operator.OpenMPS(UUID='MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc')
-
-
-# MPS_operator.CloseMPS(UUID='MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e')
-# MPS_operator.CloseMPS(UUID='MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc')
-# MIG_operator.disable_mps()
+MIG_operator.destroy_ins(0, ID_1)
+GPU_worker.update_uuid(0,ID_1, 'destroy')
+MIG_operator.destroy_ins(0, ID_2)
+GPU_worker.update_uuid(0,ID_2, 'destroy')
