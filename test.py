@@ -89,22 +89,22 @@ import node.GPU_worker as GPU_worker
 
 
 
-MIG_operator.destroy_ins(0, 5)
-MIG_operator.destroy_ins(0, 13)
+# MIG_operator.destroy_ins(0, 5)
+# MIG_operator.destroy_ins(0, 13)
 
-ID_1 = MIG_operator.create_ins(0,'1g.10gb')
-ID_2 = MIG_operator.create_ins(0,'2g.20gb')
+# ID_1 = MIG_operator.create_ins(0,'1g.10gb')
+# ID_2 = MIG_operator.create_ins(0,'2g.20gb')
 
 
 monitor_thread = threading.Thread (target=Scheduler_woker.SchedulerService)
 monitor_thread.start()
 
-time.sleep(2)
-GPU_worker.regist_worker()
-GPU_worker.start_GPU_monitor(0, ID_1)
-GPU_worker.start_GPU_monitor(0, ID_2)
+# time.sleep(2)
+# GPU_worker.regist_worker()
+# GPU_worker.start_GPU_monitor(0, ID_1)
+# GPU_worker.start_GPU_monitor(0, ID_2)
 
-time.sleep(100)
+# time.sleep(100)
 
-GPU_worker.stop_monitor(0, ID_1)
-GPU_worker.stop_monitor(0, ID_2)
+# GPU_worker.stop_monitor(0, ID_1)
+# GPU_worker.stop_monitor(0, ID_2)
