@@ -1,9 +1,13 @@
-# import grpc
-# import grpc
-# import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
-# import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
-# from concurrent import futures
-
+import grpc
+import grpc
+import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
+import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
+from concurrent import futures
+import node.GPU_worker as GPU_worker
+import node.Scheduler_worker as Scheduler_woker
+import socket
+import threading
+import time
 
 # with grpc.insecure_channel('localhost:50052') as channel:
 #     stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
@@ -46,22 +50,18 @@ import util.MIG_operator as MIG_operator
 import util.MPS_operator as MPS_operator
 import node.GPU_worker as GPU_worker
 
-# MPS_operator.CloseMPS('MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e')
-# MPS_operator.CloseMPS('MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc')
-
-MIG_operator.destroy_ins(0, 5)
-MIG_operator.destroy_ins(0, 13)
+# # MPS_operator.CloseMPS('MIG-9168fcda-71ba-50e7-aa4c-c7a4a0f3453e')
+# # MPS_operator.CloseMPS('MIG-f562e13c-35fc-58d3-b3b9-508159b7fbcc')
 
 
-ID_1 = MIG_operator.create_ins(0,'1g.10gb')
-ID_2 = MIG_operator.create_ins(0,'2g.20gb')
-GPU_worker.start_GPU_monitor(0, ID_1)
-GPU_worker.start_GPU_monitor(0, ID_2)
-time.sleep(10)
-GPU_worker.stop_monitor(0, ID_1)
-GPU_worker.stop_monitor(0, ID_2)
-MIG_operator.destroy_ins(0, ID_1)
-MIG_operator.destroy_ins(0, ID_2)
+
+
+
+# time.sleep(10)
+# GPU_worker.stop_monitor(0, ID_1)
+# GPU_worker.stop_monitor(0, ID_2)
+# MIG_operator.destroy_ins(0, ID_1)
+# MIG_operator.destroy_ins(0, ID_2)
 
 
 
@@ -86,3 +86,25 @@ MIG_operator.destroy_ins(0, ID_2)
 # MIG_operator.destroy_ins(0, ID_2)
 # GPU_worker.update_uuid(0,ID_2, 'destroy')
 
+
+
+
+MIG_operator.destroy_ins(0, 5)
+MIG_operator.destroy_ins(0, 13)
+
+ID_1 = MIG_operator.create_ins(0,'1g.10gb')
+ID_2 = MIG_operator.create_ins(0,'2g.20gb')
+
+
+monitor_thread = threading.Thread (target=Scheduler_woker.SchedulerService)
+monitor_thread.start()
+
+time.sleep(2)
+GPU_worker.regist_worker()
+GPU_worker.start_GPU_monitor(0, ID_1)
+GPU_worker.start_GPU_monitor(0, ID_2)
+
+time.sleep(100)
+
+GPU_worker.stop_monitor(0, ID_1)
+GPU_worker.stop_monitor(0, ID_2)

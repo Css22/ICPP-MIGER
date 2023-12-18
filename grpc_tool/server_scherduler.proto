@@ -13,6 +13,10 @@ service SchedulerService {
     rpc Load(LoadInformation) returns (ReplyResult) {
 
     }
+
+    rpc Regist(NodeInformation) returns (ReplyResult){
+
+    }
 }
 
 service WorkerService {
@@ -43,12 +47,19 @@ message ReplyPrediction {
 
 message LoadInformation {
     int32 GPU_ID = 1;
-    repeated int32 partition = 2;
-    repeated float load = 3;
+    int32 GI_ID = 2;
+    float load = 3;
+    string name = 4;
 }
 
 message JobInformation {
     int32 GPU_ID = 1;
     int32 JobID = 2;
+}
 
+
+message NodeInformation {
+    string name = 1;
+    string ip = 2;
+    int32 port = 3;
 }

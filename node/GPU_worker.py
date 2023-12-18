@@ -8,15 +8,14 @@ import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
 import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
 import util.MIG_operator as MIG_operator
 from concurrent import futures
-
+import socket
 class GPU_monitor:
     def __init__(self):
         self.running = True
 
     def start_GPU_monitor(self, gpu_id, gi_id):
         while self.running:
-            cmd = f'dcgmi dmon -e 1002 -i {gpu_id}/{gi_id}'
-            print(cmd)
+            cmd = f'dcgmi dmon -e 1002 -d 1000 -i {gpu_id}/{gi_id}'
             process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, text=True)
 
             while self.running:
@@ -28,15 +27,15 @@ class GPU_monitor:
                     if len(output.split()) != 3:
                         continue
                     else:
-                        print( output.split()[2])
-
-        time.sleep(1)
+                        load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= float(output.split()[2]) * 100)
+        load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= -1)
 
     def stop(self):
         self.running = False
 
-
-
+ip='10.16.56.14'
+port=50052
+node = socket.gethostname()
 
 num_GPU = 1
 UUID_table = {
@@ -93,3 +92,34 @@ def update_uuid(gpu_id, GI_ID, type):
 def stop_monitor(gpu_id, GI_ID):
     monitor = monitor_table[gpu_id][GI_ID] 
     monitor.stop()
+
+def regist_worker():
+    global ip, port, node
+   
+
+    def get_local_ip():
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect(("8.8.8.8", 80))
+                ip = s.getsockname()[0]
+            return ip
+        except Exception as e:
+            print(f"Error: {e}")
+        return None
+
+    local_ip = get_local_ip()
+    with grpc.insecure_channel(f'{ip}:{port}') as channel:
+        stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
+
+        Regist = stub.Regist(server_scherduler_pb2.NodeInformation(
+            name = node, ip = local_ip , port = 50051
+            ))
+
+def load_submission(gpu_id, GI_ID, load):
+    global ip, port, node
+    with grpc.insecure_channel(f'{ip}:{port}') as channel:
+        stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
+
+        Load = stub.Load(server_scherduler_pb2.LoadInformation(
+            name = node, GPU_ID=gpu_id , GI_ID= GI_ID, load = load
+            ))

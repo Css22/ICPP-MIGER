@@ -29,10 +29,17 @@ class SchedulerServiceStub(object):
                 request_serializer=server__scherduler__pb2.LoadInformation.SerializeToString,
                 response_deserializer=server__scherduler__pb2.ReplyResult.FromString,
                 )
+        self.Regist = channel.unary_unary(
+                '/SchedulerService/Regist',
+                request_serializer=server__scherduler__pb2.NodeInformation.SerializeToString,
+                response_deserializer=server__scherduler__pb2.ReplyResult.FromString,
+                )
 
 
 class SchedulerServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
+    def __init__(self, Scheduler):
+        self.Scheduler = Scheduler
 
     def JobState(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -48,9 +55,17 @@ class SchedulerServiceServicer(object):
 
     def Load(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        self.Scheduler.update_load(request)
+        reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
+        print(self.Scheduler.load)
+        return  reply 
+
+    def Regist(self, request, context):
+
+        self.Scheduler.add_worker(request)
+        reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
+        print(self.Scheduler.worker_table)
+        return  reply 
 
 
 def add_SchedulerServiceServicer_to_server(servicer, server):
@@ -68,6 +83,11 @@ def add_SchedulerServiceServicer_to_server(servicer, server):
             'Load': grpc.unary_unary_rpc_method_handler(
                     servicer.Load,
                     request_deserializer=server__scherduler__pb2.LoadInformation.FromString,
+                    response_serializer=server__scherduler__pb2.ReplyResult.SerializeToString,
+            ),
+            'Regist': grpc.unary_unary_rpc_method_handler(
+                    servicer.Regist,
+                    request_deserializer=server__scherduler__pb2.NodeInformation.FromString,
                     response_serializer=server__scherduler__pb2.ReplyResult.SerializeToString,
             ),
     }
@@ -127,6 +147,23 @@ class SchedulerService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/SchedulerService/Load',
             server__scherduler__pb2.LoadInformation.SerializeToString,
+            server__scherduler__pb2.ReplyResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Regist(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SchedulerService/Regist',
+            server__scherduler__pb2.NodeInformation.SerializeToString,
             server__scherduler__pb2.ReplyResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
