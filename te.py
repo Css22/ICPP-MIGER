@@ -63,8 +63,8 @@ online_jobs = online_job_generator(2)
 
 
 jobs = []
-# for i in online_jobs:
-#     jobs.append(i)
+for i in online_jobs:
+    jobs.append(i)
 
 for i in offline_jobs:
     jobs.append(i)
@@ -73,34 +73,40 @@ for i in offline_jobs:
 node1 = woker()
 
 
-for i in jobs:
-    print(i)
+generate_jobid(jobs)
+jobs_tmp = generate_jobs()
 
-node1.node_schedule(jobs[0], 0)
-print(node1.config_list)
-print(node1.GPU_list)
-print(node1.throughput)
-print(GPU_worker.UUID_table)
-
-time.sleep(2)
-
-node1.node_schedule(jobs[1], 0)
-print(node1.config_list)
-print(node1.GPU_list)
-print(node1.throughput)
-print(GPU_worker.UUID_table)
+generate_job_progress_table(jobs_tmp)
 
 
-time.sleep(2)
-node1.node_schedule(jobs[2], 0)
-print(node1.config_list)
-print(node1.GPU_list)
-print(node1.throughput)
-print(GPU_worker.UUID_table)
+print(read_job_progress(0))
+record_job_progress(0, 11)
+print(read_job_progress(0))
+# node1.node_schedule(jobs[0], 0)
+# print(node1.config_list)
+# print(node1.GPU_list)
+# print(node1.throughput)
+# print(GPU_worker.UUID_table)
 
-time.sleep(2)
-print(node1.node_schedule(jobs[3], 0))
-print(node1.config_list)
-print(node1.GPU_list)
-print(node1.throughput)
-print(GPU_worker.UUID_table)
+# time.sleep(2)
+
+# node1.node_schedule(jobs[1], 0)
+# print(node1.config_list)
+# print(node1.GPU_list)
+# print(node1.throughput)
+# print(GPU_worker.UUID_table)
+
+
+# time.sleep(2)
+# node1.node_schedule(jobs[2], 0)
+# print(node1.config_list)
+# print(node1.GPU_list)
+# print(node1.throughput)
+# print(GPU_worker.UUID_table)
+
+# time.sleep(2)
+# print(node1.node_schedule(jobs[3], 0))
+# print(node1.config_list)
+# print(node1.GPU_list)
+# print(node1.throughput)
+# print(GPU_worker.UUID_table)
