@@ -38,7 +38,7 @@ def reset_mig(gpu):
     p.wait()
 
 def create_ins(gpu, ins):
-    id_map = {'1g.10gb': 19, '2g.20gb': 14, '3g.40gb': 9, '4g.40gb': 5, '7g.80gb': 0}
+    id_map = {'1c-1g-10gb': 19, '1c-2g-20gb': 14, '1c-3g-40gb': 9, '1c-4g-40gb': 5, '1c-7g-80gb': 0}
     ins_code = id_map[ins]
     cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code}'
     p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)

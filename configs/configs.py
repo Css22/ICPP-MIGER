@@ -14,7 +14,3 @@ def map_GI_ID_partition(GI_ID):
             return '4g.40gb'
         if GI_ID in GI_ID_table[i]:
             return i
-
-GI_ID =  2
-        
-print(map_GI_ID_partition(GI_ID))
