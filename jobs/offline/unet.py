@@ -88,7 +88,7 @@ def train_epoch(model, dataloader, criterion, optimizer):
     return total_loss / len(dataloader)
 
 # Training loop
-def unet_entry(epoch):
+def unet_entry(epoch, initialize, item):
     path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
 
     train_dataset = datasets.CIFAR10(root=path, train=True, transform=transform, download=True, target_transform=target_transform)
@@ -99,7 +99,11 @@ def unet_entry(epoch):
     result = 0
 
     epochs = epoch
-    for epoch in range(epochs):
+    if initialize == epochs:
+        return 0
+    
+    for epoch in range(initialize, epochs):
+        item[0] = epoch
         start_time = time.time()
         train_loss = train_epoch(model, train_loader, criterion, optimizer)
         print(f"Epoch {epoch+1}/{epochs}, Loss: {train_loss:.4f}")

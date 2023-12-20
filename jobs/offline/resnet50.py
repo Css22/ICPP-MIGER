@@ -19,7 +19,7 @@ transform = transforms.Compose([
 
 # 定义模型、损失函数和优化器
 
-def resnet50_entry(epoch):
+def resnet50_entry(epoch, initialize, item):
     # 加载数据
     trainset = torchvision.datasets.CIFAR10(root=path, train=True,
                                         download=True, transform=transform)
@@ -37,7 +37,12 @@ def resnet50_entry(epoch):
     # 训练模型
     num_epochs = epoch
     result = 0
-    for epoch in range(num_epochs):
+
+    if initialize == num_epochs:
+        return 0
+
+    for epoch in range(initialize, num_epochs):
+        item[0] =epoch
         model.train()
         start_time = time.time()
         running_loss = 0.0

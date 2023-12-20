@@ -2,7 +2,6 @@ import torch
 import torchvision
 import torchvision.transforms as T
 import time
-from util.sharing import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -39,7 +38,7 @@ def validate(model, dataloader, criterion, device):
 
     return total_loss / len(dataloader)
 
-def deeplabv3_entry(epoch):
+def deeplabv3_entry(epoch, initialize, item):
     transform = T.Compose([
         T.Resize((256, 256)),
         T.ToTensor(),
@@ -69,7 +68,11 @@ def deeplabv3_entry(epoch):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     result = 0 
     num_epochs = epoch
-    for epoch in range(num_epochs):
+    if initialize == num_epochs:
+        return 0
+    
+    for epoch in range(initialize, num_epochs):
+        item[0] = epoch
         start_time = time.time()
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer, device)
         result = time.time() - start_time

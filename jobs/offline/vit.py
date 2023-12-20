@@ -13,7 +13,7 @@ path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
 
 
 # Training loop
-def vit_entry(epoch):
+def vit_entry(epoch, initialize, item):
     # Data loading and preprocessing
     transform = transforms.Compose(
         [transforms.Resize((224, 224)),
@@ -35,7 +35,11 @@ def vit_entry(epoch):
     result = 0
 
     num_epochs = epoch
-    for epoch in range(epoch):
+    if initialize == num_epochs:
+        return 0
+    
+    for epoch in range(initialize, num_epochs):
+        item[0] = epoch
         running_loss = 0.0
         start_time = time.time()
         for i, data in enumerate(trainloader, 0):

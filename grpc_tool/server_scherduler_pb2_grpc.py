@@ -43,9 +43,9 @@ class SchedulerServiceServicer(object):
 
     def JobState(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        print(request.type, request.JobID)
+        reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
+        return  reply 
 
     def Predictor(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -57,14 +57,12 @@ class SchedulerServiceServicer(object):
         """Missing associated documentation comment in .proto file."""
         self.Scheduler.update_load(request)
         reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
-        print(self.Scheduler.load)
         return  reply 
 
     def Regist(self, request, context):
 
         self.Scheduler.add_worker(request)
         reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
-        print(self.Scheduler.worker_table)
         return  reply 
 
 

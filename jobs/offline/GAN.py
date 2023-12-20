@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
 import time
-
 workers = 2
 
 batch_size = 128
@@ -32,6 +31,8 @@ ngpu = 1
 
 result = 0 
 manualSeed = 999
+
+
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
@@ -100,7 +101,7 @@ class Discriminator(nn.Module):
     def forward(self, input):
         return self.main(input) 
     
-def GAN_entry(epoch): 
+def GAN_entry(epoch, initialize, item): 
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
     torch.use_deterministic_algorithms(True) # Needed for reproducible results
@@ -148,8 +149,11 @@ def GAN_entry(epoch):
 
     num_epochs = epoch
 
-    for epoch in range(num_epochs):
-   
+    if initialize == num_epochs:
+        return 0
+
+    for epoch in range(initialize, num_epochs):
+        item[0] = epoch
         start_time = time.time()
         for i, data in enumerate(dataloader, 0):
 

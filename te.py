@@ -79,13 +79,20 @@ node1 = woker()
 
 generate_jobid(jobs)
 jobs = generate_jobs()
+jobs[4].epoch = 4
 
-node1.executor(job=jobs[0], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
-node1.executor(job=jobs[1], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')
-time.sleep(10)
-print(node1.jobs_pid)
-os.kill(node1.jobs_pid[jobs[0].jobid], signal.SIGKILL) 
-os.kill(node1.jobs_pid[jobs[1].jobid], signal.SIGKILL) 
+node1.node_schedule(new_job=jobs[4], gpu_id=0)
+print(node1.GPU_list, node1.config_list)
+
+time.sleep(2)
+node1.node_schedule(new_job=jobs[3], gpu_id=0)
+# jobs[3].epoch = 10
+# node1.executor(job=jobs[0], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
+# node1.executor(job=jobs[3], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')
+# time.sleep(600)
+# print(node1.jobs_pid)
+# os.kill(node1.jobs_pid[jobs[0].jobid], signal.SIGTERM) 
+# os.kill(node1.jobs_pid[jobs[3].jobid], signal.SIGTERM) 
 
 
 # generate_job_progress_table(jobs)

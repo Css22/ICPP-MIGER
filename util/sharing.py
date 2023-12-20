@@ -124,17 +124,14 @@ def generate_job_progress_table(jobs, path='./configs/jobs.json'):
     with open(path, 'w') as file:
             json.dump(progress_table, file, indent=4)
     
-def read_job_progress(jobid):
-
-    with open('./configs/jobs.json', 'r') as file:
+def read_job_progress(jobid, path):
+    with open(path + './configs/jobs.json', 'r') as file:
         data = json.load(file)
-    
-
     return data[str(jobid)]
 
-def record_job_progress(jobid, progress):
+def record_job_progress(jobid, progress, path):
     
-    with open('./configs/jobs.json', 'r') as file:
+    with open(path + './configs/jobs.json', 'r') as file:
         data = json.load(file)
     
     data[str(jobid)] = progress

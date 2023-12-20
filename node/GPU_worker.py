@@ -87,7 +87,7 @@ class woker:
                     self.sorted(gpu_id)
                     self.termination(gpu_id)
                     self.creation(gpu_id)
-                    self.fix_job[gpu_id].append(new_job)
+                    # self.fix_job[gpu_id].append(new_job)
             return True
         
         else:
@@ -232,19 +232,26 @@ class woker:
     
 
     def termination(self, gpu_id):
-        # for i in self.GPU_list[gpu_id]:
-        #     if len(i) == 1:
-        #         if i[0] not in self.fix_job[gpu_id]:
-        #             pid = self.jobs_pid[i[0].jobid]
-        #             os.kill(pid, signal.SIGTERM) 
-        #     if len(i) == 2:
-        #         if i[0] not in self.fix_job[gpu_id]:
-        #             pid = self.jobs_pid[i[0].jobid]
-        #             os.kill(pid, signal.SIGTERM) 
-        #         if i[1] not in self.fix_job[gpu_id]:
-        #             pid = self.jobs_pid[i[1].jobid]
-        #             os.kill(pid, signal.SIGTERM)
+        for i in self.GPU_list[gpu_id]:
+            if len(i) == 1:
+                if i[0] not in self.fix_job[gpu_id]:
+                    if i[0].jobid not in self.jobs_pid.keys():
+                        continue
+                    pid = self.jobs_pid[i[0].jobid]
+                    os.kill(pid, signal.SIGTERM) 
 
+            if len(i) == 2:
+                if i[0] not in self.fix_job[gpu_id]:
+                    if i[0].jobid not in self.jobs_pid.keys():
+                        continue
+                    pid = self.jobs_pid[i[0].jobid]
+                    os.kill(pid, signal.SIGTERM) 
+                if i[1] not in self.fix_job[gpu_id]:
+                    if i[1].jobid not in self.jobs_pid.keys():
+                        continue
+                    pid = self.jobs_pid[i[1].jobid]
+                    os.kill(pid, signal.SIGTERM)
+        time.sleep(3)
         fix_partition = []
         destory_partition = []
         for i in self.fix_job[gpu_id]:
@@ -271,23 +278,88 @@ class woker:
                         if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
                             break
+                    self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
             else:
                 pass
     
     def run_process(self, UUID, path, model_name, type, epoch, jobid):
+        global ip, port, node
+        with grpc.insecure_channel(f'{ip}:{port}') as channel:
+            stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
+            JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                    type ='start', JobID = jobid
+                ))
+            
+
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = UUID
-        cmd = [
-            "python",
-            f"{path}entry.py",
-            "--task",
-            model_name,
-            type,
-            str(epoch)
-        ]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
-        self.jobs_pid[jobid] = int(p.pid)
-        p.wait()
+        if type == "--batch":
+            cmd = [
+                "python",
+                f"{path}entry.py",
+                "--task",
+                model_name,
+                type,
+                str(epoch)
+            ]
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+            self.jobs_pid[jobid] = int(p.pid)
+            p.wait()
+        
+
+        if type == '--epoch':
+            cmd = [
+                "python",
+                f"{path}entry.py",
+                "--task",
+                model_name,
+                type,
+                str(epoch),
+                '--jobid',
+                str(jobid)
+            ]
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+            self.jobs_pid[jobid] = int(p.pid)
+            p.wait()
+
+       
+        with grpc.insecure_channel(f'{ip}:{port}') as channel:
+            stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
+         
+            if p.returncode == 0:
+                JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                    type ='finish', JobID = jobid
+                ))
+                if self.cluster_algorithm == 'miso':
+                    gpu_index =-1
+                    for i in range(0, len(self.GPU_list)):
+                        jobs = []
+                        for j in range(0, len(self.GPU_list[i])):
+                            for z in self.GPU_list[i][j]:
+                                jobs.append(z)
+
+                    flag = False
+                    tmp_job = None
+                    for j in jobs:
+                        if j.jobid == jobid:
+                            tmp_job = j
+                            gpu_index = i
+                            flag = True
+                            break 
+                            
+                jobs.remove(tmp_job)
+                if flag:
+                    self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
+                    self.sorted(gpu_index)
+                    self.termination(gpu_index)
+                    self.creation(gpu_index)
+
+            if p.returncode == 143  or -15:
+                JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                    type ='pause', JobID = jobid
+                ))
+       
+                
 
 
 
@@ -308,6 +380,7 @@ class woker:
         else:
             pass
       
+
     def sorted(self, gpu_id):
         combined = sorted(zip(self.config_list[gpu_id], self.GPU_list[gpu_id]), key=lambda x: (-reverser_map[x[0]]))
 

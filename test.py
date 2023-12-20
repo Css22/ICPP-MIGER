@@ -1,5 +1,4 @@
 import grpc
-import grpc
 import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
 import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
 from concurrent import futures
@@ -93,11 +92,11 @@ import node.GPU_worker as GPU_worker
 
 
 MIG_operator.destroy_ins(0, 0)
-# MIG_operator.destroy_ins(0, 13)
+# MIG_operator.destroy_ins(0, 2)
 
 # ID_1 = MIG_operator.create_ins(0,'1g.10gb')
-ID_2 = MIG_operator.create_ins(0,'1c-4g-40gb')
-ID_2 = MIG_operator.create_ins(0,'1c-3g-40gb')
+# ID_2 = MIG_operator.create_ins(0,'1c-4g-40gb')
+# ID_2 = MIG_operator.create_ins(0,'1c-3g-40gb')
 
 # monitor_thread = threading.Thread (target=Scheduler_woker.SchedulerService)
 # monitor_thread.start()

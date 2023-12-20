@@ -7,12 +7,11 @@ from transformers import get_scheduler
 import torch
 import time
 from tqdm.auto import tqdm
-from util.sharing import *
 
 
 
 
-def bert_entry(epoch):
+def bert_entry(epoch, initialize, item):
     dataset = load_dataset("yelp_review_full")
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
@@ -62,11 +61,13 @@ def bert_entry(epoch):
     model.to(device)
     model.train()
 
-
+    if initialize == num_epochs:
+        return 0
 
 
     
-    for epoch in range(num_epochs):
+    for epoch in range(initialize, num_epochs):
+        item[0] = epoch
         start_time = time.time()
         for batch in train_dataloader:
             batch = {k: v.to(device) for k, v in batch.items()}

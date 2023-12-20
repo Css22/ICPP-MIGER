@@ -228,7 +228,7 @@ def train_epoch(model, optimizer, loss_fn):
 from timeit import default_timer as timer
 import time
 
-def transformer_entry(epoch):
+def transformer_entry(epoch, initialize, item):
 
     NUM_EPOCHS = epoch
     transformer = Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE,
@@ -244,7 +244,12 @@ def transformer_entry(epoch):
 
     optimizer = torch.optim.Adam(transformer.parameters(), lr=0.0001, betas=(0.9, 0.98), eps=1e-9)
     result = 0 
-    for epoch in range(1, NUM_EPOCHS+1):
+
+    if initialize  == NUM_EPOCHS:
+        return 0
+
+    for epoch in range(initialize, NUM_EPOCHS):
+        item[0] = epoch
         start_time = time.time()
         train_loss = train_epoch(transformer, optimizer, loss_fn)
         end_time = time.time()
