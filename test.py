@@ -91,7 +91,13 @@ import node.GPU_worker as GPU_worker
 
 
 
-MIG_operator.destroy_ins(0, 0)
+MIG_operator.destroy_ins(0, 3)
+MIG_operator.destroy_ins(0, 4)
+MIG_operator.destroy_ins(0, 5)
+MIG_operator.destroy_ins(0, 13)
+# MIG_operator.destroy_ins(0, 11)
+# MIG_operator.destroy_ins(0, 12)
+# MIG_operator.destroy_ins(0, 13)
 # MIG_operator.destroy_ins(0, 2)
 
 # ID_1 = MIG_operator.create_ins(0,'1g.10gb')

@@ -87,7 +87,8 @@ class woker:
                     self.sorted(gpu_id)
                     self.termination(gpu_id)
                     self.creation(gpu_id)
-                    # self.fix_job[gpu_id].append(new_job)
+                    self.fix_job[gpu_id].append(new_job)
+
             return True
         
         else:
@@ -136,14 +137,14 @@ class woker:
         if len(valid_config) == 0:
             return False
 
-        # valid = []
+        valid = []
        
-        # for i in valid_config:
-        #     if check_volid(i.copy(), online_jobs, online_config):
-        #         valid.append(i)
+        for i in valid_config:
+            if check_volid(i.copy(), online_jobs, online_config):
+                valid.append(i)
 
    
-        # valid_config = valid
+        valid_config = valid
             
 
         for i in valid_config:
@@ -166,6 +167,7 @@ class woker:
                 for j in range(0, len(jobs)):
                     self.GPU_list[gpu_id].append([jobs[j]])
                     self.config_list[gpu_id].append(config_list[j])
+                    set_gi_id(self.GPU_list[gpu_id], config_list)
                 return 0.0000001
           
             all_combinations = list(permutations(i, n))
@@ -192,7 +194,7 @@ class woker:
                 self.GPU_list[gpu_id].append([i])
                 config_list.append(best_config[offline_jobs.index(i)])
 
-        # miso_set_gi_id(jobs, config_list)
+        set_gi_id(self.GPU_list[gpu_id], config_list)
 
         self.config_list[gpu_id] = config_list
 
@@ -252,13 +254,17 @@ class woker:
                     pid = self.jobs_pid[i[1].jobid]
                     os.kill(pid, signal.SIGTERM)
         time.sleep(3)
+
+
         fix_partition = []
         destory_partition = []
+
         for i in self.fix_job[gpu_id]:
             fix_partition.append(i.gi_id)
 
         for i in UUID_table[gpu_id].keys():
-            if UUID_table[gpu_id][i] not in fix_partition:
+            
+            if int(UUID_table[gpu_id][i]) not in fix_partition:
                 destory_partition.append(UUID_table[gpu_id][i])
         
         for i in destory_partition:
@@ -270,15 +276,36 @@ class woker:
         for i in range(0, len(self.GPU_list[gpu_id])):
             if len(self.GPU_list[gpu_id][i]) == 1:
                 if self.GPU_list[gpu_id][i][0] not in self.fix_job[gpu_id]:
-                    config = self.config_list[gpu_id][i]
-                    ID = MIG_operator.create_ins(gpu_id, config)
-                    update_uuid(gpu_id, ID, type)
+                    if isinstance(self.GPU_list[gpu_id][i][0], offline_job):
+                        config = self.config_list[gpu_id][i]
+                        ID = MIG_operator.create_ins(gpu_id, config)
+                        update_uuid(gpu_id, ID, type)
+                        UUID = 0
+                        for j in UUID_table[gpu_id].keys():
+                            if int(UUID_table[gpu_id][j]) == int(ID):
+                                UUID = j
+                                break
+                        self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
+
+                    else:
+                        GI_ID = self.GPU_list[gpu_id][i][0].gi_id
+                        config = self.config_list[gpu_id][i]
+                        ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+                        update_uuid(gpu_id, ID, type)
+                        UUID = 0
+                        for j in UUID_table[gpu_id].keys():
+                            if int(UUID_table[gpu_id][j]) == int(ID):
+                                UUID = j
+                                break
+                        self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
+                else:
+                    GI_ID = self.GPU_list[gpu_id][i][0].gi_id
                     UUID = 0
                     for j in UUID_table[gpu_id].keys():
-                        if int(UUID_table[gpu_id][j]) == int(ID):
+                        if int(UUID_table[gpu_id][j]) == int(GI_ID):
                             UUID = j
                             break
-                    self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
+                    continue
             else:
                 pass
     

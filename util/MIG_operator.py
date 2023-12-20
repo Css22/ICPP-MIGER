@@ -57,6 +57,7 @@ def destroy_ins(gpu, ID):
     p.wait()
 
 def create_ins_with_ID(gpu, ins, req_ID):
+    print(ins, req_ID)
     tem_ID_list = []
     while True:
         ID = create_ins(gpu, ins)

@@ -81,11 +81,20 @@ generate_jobid(jobs)
 jobs = generate_jobs()
 jobs[4].epoch = 4
 
-node1.node_schedule(new_job=jobs[4], gpu_id=0)
+node1.node_schedule(new_job=jobs[0], gpu_id=0)
+print(node1.GPU_list, node1.config_list)
+
+time.sleep(2)
+node1.node_schedule(new_job=jobs[1], gpu_id=0)
+print(node1.GPU_list, node1.config_list)
+
+time.sleep(2)
+node1.node_schedule(new_job=jobs[2], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
 
 time.sleep(2)
 node1.node_schedule(new_job=jobs[3], gpu_id=0)
+print(node1.GPU_list, node1.config_list)
 # jobs[3].epoch = 10
 # node1.executor(job=jobs[0], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
 # node1.executor(job=jobs[3], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')

@@ -138,3 +138,388 @@ def record_job_progress(jobid, progress, path):
 
     with open('./configs/jobs.json', 'w') as file:
         json.dump(data, file, indent=4)
+
+
+
+import random
+from collections import deque
+from itertools import product
+
+
+
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.children = []
+        self.flag = False
+        self.father = None
+    
+    def traverse_children(self):
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            current.flag = True
+            queue.extend(current.children)
+    
+    def add_children(self, TreeNode):
+        self.children.append(TreeNode)
+    
+    def set_father(self, TressNode):
+        self.father = TressNode
+
+    def remove_children(self, TreeNode):
+        self.children.remove(TreeNode)
+    
+    def change_father(self):
+       
+        if self.father != None:
+            self.father.flag = True
+            self.father.change_father()
+      
+
+
+
+
+root = TreeNode(value=0)
+layer2_node1 = TreeNode(value=1)
+layer2_node2 = TreeNode(value=2)
+layer3_node1 = TreeNode(value=3)
+layer3_node2 = TreeNode(value=4)
+layer3_node3 = TreeNode(value=5)
+layer4_node1 = TreeNode(value=7)
+layer4_node2 = TreeNode(value=8)
+layer4_node3 = TreeNode(value=9)
+layer4_node4 = TreeNode(value=10)
+layer4_node5 = TreeNode(value=11)
+layer4_node6 = TreeNode(value=12)
+layer4_node7 = TreeNode(value=13)
+
+
+root.add_children(layer2_node1)
+root.add_children(layer2_node2)
+layer2_node1.set_father(root)
+layer2_node2.set_father(root)
+
+layer2_node1.add_children(layer3_node1)
+layer2_node1.add_children(layer3_node2)
+layer3_node1.set_father(layer2_node1)
+layer3_node2.set_father(layer2_node1)
+
+layer2_node2.add_children(layer3_node3)
+layer2_node2.add_children(layer4_node7)
+layer3_node3.set_father(layer2_node2)
+layer4_node7.set_father(layer2_node2)
+
+layer3_node1.add_children(layer4_node1)
+layer3_node1.add_children(layer4_node2)
+layer4_node1.set_father(layer3_node1)
+layer4_node2.set_father(layer3_node1)
+
+layer3_node2.add_children(layer4_node3)
+layer3_node2.add_children(layer4_node4)
+layer4_node3.set_father(layer3_node2)
+layer4_node4.set_father(layer3_node2)
+
+layer3_node3.add_children(layer4_node5)
+layer3_node3.add_children(layer4_node6)
+layer4_node5.set_father(layer3_node3)
+layer4_node6.set_father(layer3_node3)
+
+
+config_choice_list = {
+    '1c-1g-10gb': [13,11,12,7,8,9,10],
+    '1c-2g-20gb': [5,3,4],
+    '1c-3g-40gb': [2,1],
+    '1c-4g-40gb': [1],
+    '1c-7g-80gb': [0]
+}
+
+TreeNode_map = {
+    0 : root,
+    1 : layer2_node1,
+    2 : layer2_node2,
+    3 : layer3_node1,
+    4 : layer3_node2,
+    5 : layer3_node3,
+    7 : layer4_node1,
+    8 : layer4_node2,
+    9 : layer4_node3,
+    10 : layer4_node4,
+    11 : layer4_node5,
+    12 : layer4_node6,
+    13 : layer4_node7,
+}
+
+MIG_instance_map = {
+    '1g.10gb': 19,
+    '2g.20gb': 14,
+    '3g.40gb': 9,
+    '4g.40gb': 5,
+    '7g.80gb': 0,
+}
+
+
+config_map = {
+        '1c-1g-10gb': 1,
+        '1c-2g-20gb': 2,
+        '1c-3g-40gb': 3,
+        '1c-4g-40gb': 4,
+        '1c-7g-80gb' : 7,
+ }
+reversed_config_map = {
+    1: '1c-1g-10gb',
+    2: '1c-2g-20gb',
+    3: '1c-3g-40gb',
+    4: '1c-4g-40gb',
+    7: '1c-7g-80gb',
+}
+
+
+def clean_tree():
+    for i in TreeNode_map.keys():
+
+        node = TreeNode_map.get(i)
+        node.flag = False
+
+def check_volid(config, online_jobs, online_config):
+
+    gi_id_list = []
+
+    
+    for i in range(0, len(online_jobs)):
+        if online_jobs[i].gi_id != -1 :
+
+            gi_id_list.append(online_jobs[i].gi_id)
+            config.remove(online_config[i])
+     
+    for i in gi_id_list:
+        node = TreeNode_map.get(i)
+        node.flag = True
+        node.change_father()
+        node.traverse_children()
+
+
+
+    reverse_list = sorted(config, reverse=True)
+
+    for i in reverse_list:
+        config = reversed_config_map.get(i)
+        find = False
+        for j in config_choice_list.get(config):
+            node = TreeNode_map.get(j)
+            if node.flag == False:
+                find = True
+                node.flag = True
+                node.change_father()
+                node.traverse_children()
+                break
+            else:
+                continue
+        if not find:
+            clean_tree()
+            return False
+    
+    clean_tree()
+    return True
+
+
+def set_gi_id(jobs, config):
+    config_reserve = []
+    for i in config:
+        config_reserve.append(config_map.get(i))
+
+    zipped_pairs = sorted(zip(config_reserve, jobs), key=lambda x: x[0], reverse=True)
+    sorted_list1, sorted_list2 = zip(*zipped_pairs)
+    config_reverse = list(sorted_list1)
+    jobs_reverse = list(sorted_list2)
+
+    index_list = [] 
+
+    for i in range(0, len(jobs_reverse)):
+        if len(jobs_reverse[i]) == 1:
+            if isinstance(jobs_reverse[i][0], online_job):
+                if jobs_reverse[i][0].gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][0].gi_id)
+                    node.flag = True
+                    node.change_father()
+                    node.traverse_children()
+                    index_list.append(i)
+        
+        else:
+            if isinstance(jobs_reverse[i][0], online_job):
+                if jobs_reverse[i][0].gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][0].gi_id)
+                    node.flag = True
+                    node.change_father()
+                    node.traverse_children()
+                    index_list.append(i)
+
+            elif isinstance(jobs_reverse[i][1], online_job):
+                if jobs_reverse[i][1].gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][1].gi_id)
+                    node.flag = True
+                    node.change_father()
+                    node.traverse_children()
+                    index_list.append(i)
+
+    for i in range(0, len(jobs_reverse)):
+        config = reversed_config_map.get(config_reverse[i])
+        if i in index_list:
+            continue
+
+        gi_id = -1
+
+        
+        if len(jobs_reverse[i]) == 1 and isinstance(jobs_reverse[i][0], offline_job):
+            for j in config_choice_list.get(config):
+                node = TreeNode_map.get(j)
+                if node.flag == False:
+                    node.flag = True
+                    gi_id = node.value
+                    node.change_father()
+                    node.traverse_children()
+                    break
+                else:
+                    continue
+        
+        else:
+            choice_list_copy = config_choice_list.get(config).copy()
+            # choice_list_copy.reverse()
+            # random.shuffle(choice_list_copy)
+            for j in choice_list_copy:
+                node = TreeNode_map.get(j)
+                if node.flag == False:
+                    find = True
+                    node.flag = True
+                    gi_id = node.value
+                    node.change_father()
+                    node.traverse_children()
+                    break
+                else:
+                    continue
+        
+        if len(jobs_reverse[i]) == 2:
+            if isinstance(jobs_reverse[i][0], online_job):
+                jobs_reverse[i][0].gi_id = gi_id
+            else:
+                jobs_reverse[i][1].gi_id = gi_id
+        elif isinstance(jobs_reverse[i][0] , online_job):
+
+            jobs_reverse[i][0].gi_id = gi_id
+    clean_tree()
+
+def search_check_volid(gi_id_list):
+    for i in gi_id_list:
+        node = TreeNode_map.get(i)
+        if node.flag == True:
+            clean_tree()
+            return False
+        
+        else:   
+            node.flag = True
+            node.change_father()
+            node.traverse_children()
+    clean_tree()
+    return True
+
+
+def evalute_solution(gi_id_list, jobs):
+
+    for i in range(0, len(gi_id_list)):
+        if isinstance(jobs[i], online_job):
+            node = TreeNode_map.get(gi_id_list[i])
+            node.flag = True
+            node.change_father()
+            node.traverse_children()
+
+
+    for i in range( len(config_choice_list.keys()) - 1 ,-1, -1):
+        for j in config_choice_list.get(list(config_choice_list.keys())[i]):
+            node = TreeNode_map.get(j)
+            if node.flag == False:
+                clean_tree()
+                return config_map.get(list(config_choice_list.keys())[i])
+            
+            else:
+                continue
+    
+    
+    clean_tree()
+    return 0
+
+def search_solution(jobs, config):
+    num = len(config)
+    config_reserve = []
+    for i in config:
+        config_reserve.append(config_map.get(i))
+
+    zipped_pairs = sorted(zip(config_reserve, jobs), key=lambda x: x[0], reverse=True)
+    sorted_list1, sorted_list2 = zip(*zipped_pairs)
+    config_reverse = list(sorted_list1)
+    jobs_reverse = list(sorted_list2)
+
+    
+    search_list = []
+
+    for i in range(0, len(config_reverse)):
+        if len(jobs_reverse[i]) == 1:
+            if isinstance(jobs_reverse[i][0], online_job) and jobs_reverse[i][0].gi_id != -1:
+                tmp_config = []
+                tmp_config.append(jobs_reverse[i][0].gi_id)
+                search_list.append(tmp_config)
+                continue
+            config  = reversed_config_map.get(config_reverse[i])
+            config = config_choice_list.get(config).copy()
+            search_list.append(config)
+        
+        else:
+            if isinstance(jobs_reverse[i][0], online_job) and jobs_reverse[i][0].gi_id != -1:
+                tmp_config = []
+                tmp_config.append(jobs_reverse[i][0].gi_id)
+                search_list.append(tmp_config)
+                continue
+
+            elif isinstance(jobs_reverse[i][1], online_job) and jobs_reverse[i][1].gi_id != -1:
+                tmp_config = []
+                tmp_config.append(jobs_reverse[i][1].gi_id)
+                search_list.append(tmp_config)
+                continue
+
+            config  = reversed_config_map.get(config_reverse[i])
+            config = config_choice_list.get(config).copy()
+            search_list.append(config)
+
+        
+
+    combinations = list(product(*search_list))
+   
+    volid_solution = []
+  
+    for i in combinations:
+        if search_check_volid(i):
+            volid_solution.append(i)
+    
+    
+    MAX_resource = -1
+    solution = []
+
+    for i in volid_solution:
+        i = list(i)
+        result = evalute_solution(i, jobs_reverse)
+        if result >= MAX_resource:
+            MAX_resource = result
+            solution = i
+    
+
+
+    for i in range(0, len(jobs_reverse)):
+        if len(jobs_reverse[i]) == 1:
+            if isinstance(jobs_reverse[i][0], online_job) and jobs_reverse[i][0].gi_id == -1:
+                jobs_reverse[i][0].gi_id = solution[i]
+        else:
+            if isinstance(jobs_reverse[i][0], online_job) and jobs_reverse[i][0].gi_id == -1:
+                jobs_reverse[i][0].gi_id = solution[i]
+            if isinstance(jobs_reverse[i][1], online_job) and jobs_reverse[i][0].gi_id == -1:  
+                jobs_reverse[i][1].gi_id = solution[i]
+
+    clean_tree()
