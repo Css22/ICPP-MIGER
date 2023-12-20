@@ -19,7 +19,7 @@ transform = transforms.Compose([
 
 # 定义模型、损失函数和优化器
 
-def resnet50_entry():
+def resnet50_entry(epoch):
     # 加载数据
     trainset = torchvision.datasets.CIFAR10(root=path, train=True,
                                         download=True, transform=transform)
@@ -35,7 +35,7 @@ def resnet50_entry():
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
     # 训练模型
-    num_epochs = 1
+    num_epochs = epoch
     result = 0
     for epoch in range(num_epochs):
         model.train()

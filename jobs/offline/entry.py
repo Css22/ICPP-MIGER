@@ -1,19 +1,19 @@
 
 import sys
-sys.path.append('/data/zbw/MIG/MIG/MIG_Schedule')
+sys.path.append('')
 import argparse
 import time
 t1 =time.time()
-from jobs.offline.GAN import GAN_entry
-from jobs.offline.transformer import transformer_entry
-from jobs.offline.bert import bert_entry
-from jobs.offline.resnet50 import resnet50_entry
-from jobs.offline.resnet152 import resnet152_entry
-from jobs.offline.mobilenet import mobilenet_entry
-from jobs.offline.deeplabv3 import deeplabv3_entry
-from jobs.offline.SqueezeNet import SqueezeNet_entry
-from jobs.offline.unet import unet_entry
-from jobs.offline.vit import vit_entry
+from GAN import GAN_entry
+from transformer import transformer_entry
+from bert import bert_entry
+from resnet50 import resnet50_entry
+from resnet152 import resnet152_entry
+from mobilenet import mobilenet_entry
+from deeplabv3 import deeplabv3_entry
+from SqueezeNet import SqueezeNet_entry
+from unet import unet_entry
+from vit import vit_entry
 model_dic = {
     'GAN': GAN_entry,
     'transformer': transformer_entry,
@@ -127,19 +127,15 @@ def Test_MIG(model):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str)
-    # parser.add_argument("--batch", type=int)
+    parser.add_argument("--epoch", type=int)
     
     args = parser.parse_args()
     task = args.task
-    # batch = args.batch
+    epoch = args.epoch
     entry = model_dic.get(task)
 
-    result = entry()
-    # try:
-    #     result = entry()
-    # except Exception as e:
-    #     result = 'error'
-
+    # result = entry(epoch)
+    result = entry(epoch=epoch)
     print(result)
 
 

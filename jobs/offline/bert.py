@@ -7,12 +7,12 @@ from transformers import get_scheduler
 import torch
 import time
 from tqdm.auto import tqdm
+from util.sharing import *
 
 
 
 
-
-def bert_entry():
+def bert_entry(epoch):
     dataset = load_dataset("yelp_review_full")
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
@@ -46,7 +46,7 @@ def bert_entry():
 
 
 
-    num_epochs = 1
+    num_epochs = epoch
     num_training_steps = num_epochs * len(train_dataloader)
     lr_scheduler = get_scheduler(
         name="linear", optimizer=optimizer, num_warmup_steps=0, num_training_steps=num_training_steps
@@ -61,6 +61,11 @@ def bert_entry():
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
     model.train()
+
+
+
+
+    
     for epoch in range(num_epochs):
         start_time = time.time()
         for batch in train_dataloader:

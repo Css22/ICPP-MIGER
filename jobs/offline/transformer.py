@@ -228,9 +228,9 @@ def train_epoch(model, optimizer, loss_fn):
 from timeit import default_timer as timer
 import time
 
-def transformer_entry():
+def transformer_entry(epoch):
 
-    NUM_EPOCHS = 1
+    NUM_EPOCHS = epoch
     transformer = Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE,
                                  NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM)
 

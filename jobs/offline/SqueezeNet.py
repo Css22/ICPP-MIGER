@@ -31,7 +31,7 @@ def train(model, dataloader, criterion, optimizer, device):
 
 # Main training loop
 result = 0
-def SqueezeNet_entry():
+def SqueezeNet_entry(epoch):
     # CIFAR-10 data loaders
     transform = transforms.Compose([
         transforms.Resize(224),  # SqueezeNet expects 224x224 input size
@@ -46,7 +46,7 @@ def SqueezeNet_entry():
     model = models.squeezenet1_1(pretrained=False, num_classes=10).to(device)  # Using SqueezeNet 1.1 version
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
-
+    epochs = epoch
     for epoch in range(epochs):
         start_time = time.time()
         train_loss = train(model, train_loader, criterion, optimizer, device)

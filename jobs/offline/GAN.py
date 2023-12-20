@@ -100,7 +100,7 @@ class Discriminator(nn.Module):
     def forward(self, input):
         return self.main(input) 
     
-def GAN_entry(): 
+def GAN_entry(epoch): 
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
     torch.use_deterministic_algorithms(True) # Needed for reproducible results
@@ -145,6 +145,8 @@ def GAN_entry():
     G_losses = []
     D_losses = []
     iters = 0
+
+    num_epochs = epoch
 
     for epoch in range(num_epochs):
    

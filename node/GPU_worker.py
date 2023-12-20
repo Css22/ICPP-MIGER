@@ -274,26 +274,36 @@ class woker:
             else:
                 pass
     
-    def run_process(self, cmd, jobid):
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        self.jobs_pid[jobid] = p.pid
+    def run_process(self, UUID, path, model_name, type, epoch, jobid):
+        env = os.environ.copy()
+        env["CUDA_VISIBLE_DEVICES"] = UUID
+        cmd = [
+            "python",
+            f"{path}entry.py",
+            "--task",
+            model_name,
+            type,
+            str(epoch)
+        ]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+        self.jobs_pid[jobid] = int(p.pid)
         p.wait()
 
-        
+
+
+
 
     def executor(self, job, UUID, MPS_flag = False, MPS_percentage=None):
         offline_path = './jobs/offline/'
         online_path = './jobs/online/'
         if not MPS_flag:
             if isinstance(job, online_job):
-                cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {online_path}entry.py --task {job.model_name} --batch {job.batch_Size}'
-                print(cmd)
-                thread = threading.Thread(target=self.run_process, args=(cmd, job.jobid))
+                # cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {online_path}entry.py --task {job.model_name} --batch {job.batch_Size}'
+                thread = threading.Thread(target=self.run_process, args=(UUID, online_path, job.model_name, '--batch' ,job.batch_Size ,job.jobid))
                
             if isinstance(job, offline_job):
-                cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {offline_path}entry.py --task {job.model_name}'
-                print(cmd)
-                thread = threading.Thread(target=self.run_process, args=(cmd, job.jobid))
+                # cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {offline_path}entry.py --task {job.model_name} --epoch {job.epoch}'
+                thread = threading.Thread(target=self.run_process, args=(UUID, offline_path, job.model_name, '--epoch' ,job.epoch ,job.jobid))
             thread.start()
         else:
             pass
@@ -308,6 +318,8 @@ class woker:
 
         self.config_list[gpu_id] = sorted_list1
         self.GPU_list[gpu_id] = sorted_list2
+
+
 
 class GPU_monitor:
     def __init__(self):
@@ -327,6 +339,8 @@ class GPU_monitor:
                     if len(output.split()) != 3:
                         continue
                     else:
+
+
                         load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= float(output.split()[2]) * 100)
         load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= -1)
 
@@ -408,3 +422,8 @@ def load_submission(gpu_id, GI_ID, load):
         Load = stub.Load(server_scherduler_pb2.LoadInformation(
             name = node, GPU_ID=gpu_id , GI_ID= GI_ID, load = load
             ))
+
+
+
+
+# def job_state_update(jobid, ):

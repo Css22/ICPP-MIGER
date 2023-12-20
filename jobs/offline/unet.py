@@ -88,7 +88,7 @@ def train_epoch(model, dataloader, criterion, optimizer):
     return total_loss / len(dataloader)
 
 # Training loop
-def unet_entry():
+def unet_entry(epoch):
     path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
 
     train_dataset = datasets.CIFAR10(root=path, train=True, transform=transform, download=True, target_transform=target_transform)
@@ -97,6 +97,8 @@ def unet_entry():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
     result = 0
+
+    epochs = epoch
     for epoch in range(epochs):
         start_time = time.time()
         train_loss = train_epoch(model, train_loader, criterion, optimizer)

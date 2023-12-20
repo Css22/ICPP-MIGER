@@ -3,6 +3,8 @@ from node.GPU_worker import woker
 import node.GPU_worker as GPU_worker
 import random
 import time
+import os
+import signal
 job_list = get_job_list()
 random.seed(17)
 def offline_job_generator(num):
@@ -78,13 +80,15 @@ node1 = woker()
 generate_jobid(jobs)
 jobs = generate_jobs()
 
-
-print(jobs[2].jobid, jobs[3].jobid)
-node1.executor(job=jobs[2], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
-node1.executor(job=jobs[3], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')
+node1.executor(job=jobs[0], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
+node1.executor(job=jobs[1], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')
 time.sleep(10)
 print(node1.jobs_pid)
-generate_job_progress_table(jobs)
+os.kill(node1.jobs_pid[jobs[0].jobid], signal.SIGKILL) 
+os.kill(node1.jobs_pid[jobs[1].jobid], signal.SIGKILL) 
+
+
+# generate_job_progress_table(jobs)
 
 
 # print(read_job_progress(0))
