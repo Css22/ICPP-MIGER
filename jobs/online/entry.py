@@ -157,8 +157,35 @@ def Test_MIG(task, batch):
     return data.quantile(.95)
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--task", type=str)
+    parser.add_argument("--batch", type=int)
+    args = parser.parse_args()
+    task = args.task
+    batch = args.batch
+    if task == 'bert':  
+        model = get_model(task)
+        model = model().half().cuda(0).eval()
+    else:
+        model = get_model(task)
+        model = model().cuda(0).eval()
 
+    if task == 'bert':
+        input,masks = get_input(task, batch)
+    else:
+        input = get_input(task, batch)
 
+    while True:
+        start_time = time.time()
+        if task == 'bert':
+            output= model.run(input,masks,0,12).cpu()
+        elif task == 'deeplabv3':
+            output= model(input)['out'].cpu()
+        else:
+            output=model(input).cpu() 
+        end_time = time.time()
+        break
 
 # if __name__ == "__main__":
 #     path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/online_profile/'
@@ -184,48 +211,48 @@ def Test_MIG(task, batch):
 #     file.close()
 
     
-if __name__ == "__main__":
-    path = "/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/result/2_copy"
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str)
-    parser.add_argument("--percentage1", type=int)
-    parser.add_argument("--percentage2", type=int)
-    parser.add_argument("--task", type=str)
-    parser.add_argument("--task2", type=str)
-    parser.add_argument("--batch", type=int)
-    parser.add_argument("--time1", type=int)
-    parser.add_argument("--time2", type=int)
+# if __name__ == "__main__":
+#     path = "/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/result/2_copy"
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--config", type=str)
+#     parser.add_argument("--percentage1", type=int)
+#     parser.add_argument("--percentage2", type=int)
+#     parser.add_argument("--task", type=str)
+#     parser.add_argument("--task2", type=str)
+#     parser.add_argument("--batch", type=int)
+#     parser.add_argument("--time1", type=int)
+#     parser.add_argument("--time2", type=int)
 
-    args = parser.parse_args()
-    config = args.config  
-    task = args.task
-    task2 = args.task2
-    percentage1 = args.percentage1
-    percentage2 = args.percentage2
-    batch = args.batch
-    time1 = args.time1
-    time2 = args.time2
+#     args = parser.parse_args()
+#     config = args.config  
+#     task = args.task
+#     task2 = args.task2
+#     percentage1 = args.percentage1
+#     percentage2 = args.percentage2
+#     batch = args.batch
+#     time1 = args.time1
+#     time2 = args.time2
 
-    start = time.time()
-    result = 0
+#     start = time.time()
+#     result = 0
 
-    try:
+#     try:
        
-        result = Test_MIG_MPS(task=task, batch=batch, time1=time1, time2=time2)
-    except Exception as e:
-        result = 'error'
-        num = 1
-        flag = True
-        while flag:
-            if time.time() - start >= num * 2:
-                if check_first_line(flag_path, 'True'):
-                    modify_first_line(flag_path, 'False')
-                    flag = False
-                else:
-                    num = num + 1
+#         result = Test_MIG_MPS(task=task, batch=batch, time1=time1, time2=time2)
+#     except Exception as e:
+#         result = 'error'
+#         num = 1
+#         flag = True
+#         while flag:
+#             if time.time() - start >= num * 2:
+#                 if check_first_line(flag_path, 'True'):
+#                     modify_first_line(flag_path, 'False')
+#                     flag = False
+#                 else:
+#                     num = num + 1
     
     
-    with open(path, 'a+') as file:
-        output =  "online "+ config+" " +  task + " " + str(batch) + " " + str(percentage1) + " " + task2  +  " "+ str(percentage2) + " " + str(result) +"\n"
-        file.write(output)
-        file.close()
+#     with open(path, 'a+') as file:
+#         output =  "online "+ config+" " +  task + " " + str(batch) + " " + str(percentage1) + " " + task2  +  " "+ str(percentage2) + " " + str(result) +"\n"
+#         file.write(output)
+#         file.close()

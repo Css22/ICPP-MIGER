@@ -80,13 +80,13 @@ class woker:
                         self.throughput[gpu_id] = throught_put
                         self.sorted(gpu_id)
                         self.termination(gpu_id)
-                        self.executor(gpu_id)
+                        self.creation(gpu_id)
                 else:
                     throught_put = self.miso_partition_optimizer(jobs, gpu_id)
                     self.throughput[gpu_id] = throught_put
                     self.sorted(gpu_id)
                     self.termination(gpu_id)
-                    self.executor(gpu_id)
+                    self.creation(gpu_id)
                     self.fix_job[gpu_id].append(new_job)
             return True
         
@@ -258,7 +258,7 @@ class woker:
             MIG_operator.destroy_ins(gpu_id, i)
             update_uuid(gpu_id, i, 'destroy')
 
-    def executor(self, gpu_id):
+    def creation(self, gpu_id):
         type = 'create'
         for i in range(0, len(self.GPU_list[gpu_id])):
             if len(self.GPU_list[gpu_id][i]) == 1:
@@ -271,10 +271,33 @@ class woker:
                         if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
                             break
-
             else:
                 pass
+    
+    def run_process(self, cmd, jobid):
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        self.jobs_pid[jobid] = p.pid
+        p.wait()
 
+        
+
+    def executor(self, job, UUID, MPS_flag = False, MPS_percentage=None):
+        offline_path = './jobs/offline/'
+        online_path = './jobs/online/'
+        if not MPS_flag:
+            if isinstance(job, online_job):
+                cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {online_path}entry.py --task {job.model_name} --batch {job.batch_Size}'
+                print(cmd)
+                thread = threading.Thread(target=self.run_process, args=(cmd, job.jobid))
+               
+            if isinstance(job, offline_job):
+                cmd = f'export CUDA_VISIBLE_DEVICES={UUID} && python {offline_path}entry.py --task {job.model_name}'
+                print(cmd)
+                thread = threading.Thread(target=self.run_process, args=(cmd, job.jobid))
+            thread.start()
+        else:
+            pass
+      
     def sorted(self, gpu_id):
         combined = sorted(zip(self.config_list[gpu_id], self.GPU_list[gpu_id]), key=lambda x: (-reverser_map[x[0]]))
 

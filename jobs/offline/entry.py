@@ -84,65 +84,63 @@ def Test_MIG(model):
 
 
 # Test_MIG_MPS
-if __name__ == "__main__":
-    path = "/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/result/2_copy"
-    flag_path = "/data/zbw/MIG/MIG/MIG_Schedule/flag"
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str)
-    parser.add_argument("--percentage1", type=int)
-    parser.add_argument("--percentage2", type=int)
-    parser.add_argument("--task", type=str)
-    parser.add_argument("--task2", type=str)
-    parser.add_argument("--batch", type=int)
-
-
-    args = parser.parse_args()
-    config = args.config  
-    task = args.task
-    task2 = args.task2
-    percentage1 = args.percentage1
-    percentage2 = args.percentage2
-    batch = args.batch
-
-    start = time.time()
-    result = 0
-
-    try:
-        result = Test_MIG_MPS(model=task)
-        modify_first_line(flag_path, 'True')
-    except Exception as e:
-        result = 'error'
-        modify_first_line(flag_path, 'True')
-
-
-
-
-    with open(path, 'a+') as file:
-        output =  "offline "+ config+" " +  task  + " " + str(percentage1) + " " + task2 + " "+ str(batch) +  " "+ str(percentage2) + " " + str(result) +"\n"
-        file.write(output)
-        file.close()
-
-# # Test_MIG 
-
 # if __name__ == "__main__":
+#     path = "/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/result/2_copy"
+#     flag_path = "/data/zbw/MIG/MIG/MIG_Schedule/flag"
 #     parser = argparse.ArgumentParser()
-#     parser.add_argument("--config", type=str)   
-#     parser.add_argument("--model", type=str)
+#     parser.add_argument("--config", type=str)
+#     parser.add_argument("--percentage1", type=int)
+#     parser.add_argument("--percentage2", type=int)
+#     parser.add_argument("--task", type=str)
+#     parser.add_argument("--task2", type=str)
+#     parser.add_argument("--batch", type=int)
 
 
 #     args = parser.parse_args()
 #     config = args.config  
-#     model = args.model
-#     entry = model_dic.get(model)
+#     task = args.task
+#     task2 = args.task2
+#     percentage1 = args.percentage1
+#     percentage2 = args.percentage2
+#     batch = args.batch
+
+#     start = time.time()
+#     result = 0
+
+#     try:
+#         result = Test_MIG_MPS(model=task)
+#         modify_first_line(flag_path, 'True')
+#     except Exception as e:
+#         result = 'error'
+#         modify_first_line(flag_path, 'True')
 
 
-#     result = entry()
-#     # try:
-#     #     result = entry()
-#     # except Exception as e:
-#     #     result = 'error'
 
-#     print(result)
+
+#     with open(path, 'a+') as file:
+#         output =  "offline "+ config+" " +  task  + " " + str(percentage1) + " " + task2 + " "+ str(batch) +  " "+ str(percentage2) + " " + str(result) +"\n"
+#         file.write(output)
+#         file.close()
+
+# # Test_MIG 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--task", type=str)
+    # parser.add_argument("--batch", type=int)
+    
+    args = parser.parse_args()
+    task = args.task
+    # batch = args.batch
+    entry = model_dic.get(task)
+
+    result = entry()
+    # try:
+    #     result = entry()
+    # except Exception as e:
+    #     result = 'error'
+
+    print(result)
 
 
 

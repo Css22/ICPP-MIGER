@@ -30,7 +30,7 @@ MIG 相关命令
 sudo nvidia-smi mig -dci -i 0 -gi 5 -ci 0 &&  sudo nvidia-smi mig -dgi -i 0 -gi 5
 
 
-
+/home/zbw/xcore/xray run -c config.json 
 sudo nvidia-smi mig -cgi $1 -C
 sudo nvidia-smi mig -dci -i 0 -gi $1 -ci 0 && sudo nvidia-smi mig -dgi -i 0 -gi $1
 export CUDA_VISIBLE_DEVICES=$uuid

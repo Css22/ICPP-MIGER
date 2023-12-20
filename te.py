@@ -73,15 +73,23 @@ for i in offline_jobs:
 node1 = woker()
 
 
+
+
 generate_jobid(jobs)
-jobs_tmp = generate_jobs()
-
-generate_job_progress_table(jobs_tmp)
+jobs = generate_jobs()
 
 
-print(read_job_progress(0))
-record_job_progress(0, 11)
-print(read_job_progress(0))
+print(jobs[2].jobid, jobs[3].jobid)
+node1.executor(job=jobs[2], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
+node1.executor(job=jobs[3], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')
+time.sleep(10)
+print(node1.jobs_pid)
+generate_job_progress_table(jobs)
+
+
+# print(read_job_progress(0))
+# record_job_progress(0, 11)
+# print(read_job_progress(0))
 # node1.node_schedule(jobs[0], 0)
 # print(node1.config_list)
 # print(node1.GPU_list)
