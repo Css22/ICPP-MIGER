@@ -4,7 +4,7 @@ from deeplabv3 import deeplabv3
 from inception_ve import inception_v3
 from mobilenet_v2 import mobilenet
 from resnet import resnet50,resnet101,resnet152
-from unet import unet
+from jobs.online.Unet import unet
 from vgg_splited import vgg16,vgg19
 import time
 import argparse

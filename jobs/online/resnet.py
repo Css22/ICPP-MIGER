@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.hub import load_state_dict_from_url
-from jobs.online.submodel import *
+from submodel import *
 
 __all__ = [
     "ResNet",

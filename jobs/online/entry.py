@@ -3,17 +3,16 @@ import torch
 import time
 import pandas as pd 
 import numpy as np
-sys.path.append('/data/zbw/MIG/MIG/MIG_Schedule')
 import argparse
-from jobs.online.bert import BertModel
-from jobs.online.alexnet import alexnet
-from jobs.online.open_unmix import open_unmix
-from jobs.online.mobilenet_v2 import mobilenet
-from jobs.online.deeplabv3 import deeplabv3
-from jobs.online.unet import unet
-from jobs.online.vgg_splited import vgg16, vgg19
-from jobs.online.resnet import resnet50,resnet101,resnet152
-from jobs.online.inception_ve import inception_v3
+from bert import BertModel
+from alexnet import alexnet
+from open_unmix import open_unmix
+from mobilenet_v2 import mobilenet
+from deeplabv3 import deeplabv3
+from Unet import unet
+from vgg_splited import vgg16, vgg19
+from resnet import resnet50,resnet101,resnet152
+from inception_ve import inception_v3
 
 flag_path = "/data/zbw/MIG/MIG/MIG_Schedule/flag"
 model_list = {

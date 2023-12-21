@@ -3,7 +3,8 @@
 2: 利用 envs Abacus文件夹进行迁移
     packaging.version.InvalidVersion: Invalid version: '0.10.1,<0.11' ::: pip install --upgrade transformers
 
-    下载celeba数据集（通过scp 命令传递数据集）
+    通过scp 命令传递数据集
+    
     grpc 的安装
 3: 配置代理 proxychains
 
