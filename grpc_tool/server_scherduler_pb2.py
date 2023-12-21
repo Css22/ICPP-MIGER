@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17server_scherduler.proto\".\n\x0fJobStateMessage\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\r\n\x05JobID\x18\x02 \x01(\x05\"\x1f\n\x0bReplyResult\x12\x10\n\x08response\x18\x01 \x01(\t\"F\n\nJobCombine\x12\x11\n\tpartition\x18\x01 \x01(\x05\x12\x0e\n\x06JobIDs\x18\x02 \x03(\x05\x12\x15\n\rMPSPercentage\x18\x03 \x03(\x05\"5\n\x0fReplyPrediction\x12\x0e\n\x06JobIDs\x18\x01 \x03(\x05\x12\x12\n\nPrediction\x18\x02 \x03(\x02\"L\n\x0fLoadInformation\x12\x0e\n\x06GPU_ID\x18\x01 \x01(\x05\x12\r\n\x05GI_ID\x18\x02 \x01(\x05\x12\x0c\n\x04load\x18\x03 \x01(\x02\x12\x0c\n\x04name\x18\x04 \x01(\t\"/\n\x0eJobInformation\x12\x0e\n\x06GPU_ID\x18\x01 \x01(\x05\x12\r\n\x05JobID\x18\x02 \x01(\x05\"9\n\x0fNodeInformation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\x05\x32\xc4\x01\n\x10SchedulerService\x12,\n\x08JobState\x12\x10.JobStateMessage\x1a\x0c.ReplyResult\"\x00\x12,\n\tPredictor\x12\x0b.JobCombine\x1a\x10.ReplyPrediction\"\x00\x12(\n\x04Load\x12\x10.LoadInformation\x1a\x0c.ReplyResult\"\x00\x12*\n\x06Regist\x12\x10.NodeInformation\x1a\x0c.ReplyResult\"\x00\x32=\n\rWorkerService\x12,\n\tAccpetJob\x12\x0f.JobInformation\x1a\x0c.ReplyResult\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17server_scherduler.proto\".\n\x0fJobStateMessage\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\r\n\x05JobID\x18\x02 \x01(\x05\"\x1f\n\x0bReplyResult\x12\x10\n\x08response\x18\x01 \x01(\t\"F\n\nJobCombine\x12\x11\n\tpartition\x18\x01 \x01(\x05\x12\x0e\n\x06JobIDs\x18\x02 \x03(\x05\x12\x15\n\rMPSPercentage\x18\x03 \x03(\x05\"5\n\x0fReplyPrediction\x12\x0e\n\x06JobIDs\x18\x01 \x03(\x05\x12\x12\n\nPrediction\x18\x02 \x03(\x02\"=\n\x0fLoadInformation\x12\x0e\n\x06GPU_ID\x18\x01 \x01(\x05\x12\x0c\n\x04load\x18\x02 \x01(\x02\x12\x0c\n\x04name\x18\x03 \x01(\t\"/\n\x0eJobInformation\x12\x0e\n\x06GPU_ID\x18\x01 \x01(\x05\x12\r\n\x05JobID\x18\x02 \x01(\x05\"9\n\x0fNodeInformation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\x05\x32\xc4\x01\n\x10SchedulerService\x12,\n\x08JobState\x12\x10.JobStateMessage\x1a\x0c.ReplyResult\"\x00\x12,\n\tPredictor\x12\x0b.JobCombine\x1a\x10.ReplyPrediction\"\x00\x12(\n\x04Load\x12\x10.LoadInformation\x1a\x0c.ReplyResult\"\x00\x12*\n\x06Regist\x12\x10.NodeInformation\x1a\x0c.ReplyResult\"\x00\x32=\n\rWorkerService\x12,\n\tAccpetJob\x12\x0f.JobInformation\x1a\x0c.ReplyResult\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -30,13 +30,13 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_REPLYPREDICTION']._serialized_start=180
   _globals['_REPLYPREDICTION']._serialized_end=233
   _globals['_LOADINFORMATION']._serialized_start=235
-  _globals['_LOADINFORMATION']._serialized_end=311
-  _globals['_JOBINFORMATION']._serialized_start=313
-  _globals['_JOBINFORMATION']._serialized_end=360
-  _globals['_NODEINFORMATION']._serialized_start=362
-  _globals['_NODEINFORMATION']._serialized_end=419
-  _globals['_SCHEDULERSERVICE']._serialized_start=422
-  _globals['_SCHEDULERSERVICE']._serialized_end=618
-  _globals['_WORKERSERVICE']._serialized_start=620
-  _globals['_WORKERSERVICE']._serialized_end=681
+  _globals['_LOADINFORMATION']._serialized_end=296
+  _globals['_JOBINFORMATION']._serialized_start=298
+  _globals['_JOBINFORMATION']._serialized_end=345
+  _globals['_NODEINFORMATION']._serialized_start=347
+  _globals['_NODEINFORMATION']._serialized_end=404
+  _globals['_SCHEDULERSERVICE']._serialized_start=407
+  _globals['_SCHEDULERSERVICE']._serialized_end=603
+  _globals['_WORKERSERVICE']._serialized_start=605
+  _globals['_WORKERSERVICE']._serialized_end=666
 # @@protoc_insertion_point(module_scope)

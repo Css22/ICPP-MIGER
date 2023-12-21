@@ -11,7 +11,10 @@ from concurrent import futures
 from util.sharing import *
 import socket
 from itertools import permutations
+busy_table ={
 
+}
+busy = []
 UUID_table = {
 
 }
@@ -39,8 +42,22 @@ job_list = get_throught_single_list()
 
 online_job_data = get_job_list()
 
+for i in range(0, num_GPU):
+    UUID_table[i] = {
 
-class woker:
+    }
+
+    static_partition[i] = []
+
+    monitor_table[i] = {
+
+    }
+
+    busy_table[i] = {
+
+    }
+    busy.append(0)
+class woker: 
     def __init__(self, cluster_algorithm='miso', max_job_per_GPU=4):
         self.jobs_pid = {}
         self.fix_job = []
@@ -55,7 +72,10 @@ class woker:
             self.throughput.append(0)
             self.config_list.append([])
             self.fix_job.append([])
-    
+
+    def start_update_load(self):
+        self.update_thread = threading.Thread(target=self.periodic_load_update)
+        self.update_thread.start()
 
     def node_schedule(self, new_job, gpu_id):
 
@@ -265,9 +285,11 @@ class woker:
         for i in UUID_table[gpu_id].keys():
             
             if int(UUID_table[gpu_id][i]) not in fix_partition:
+
                 destory_partition.append(UUID_table[gpu_id][i])
         
         for i in destory_partition:
+            stop_monitor(gpu_id=gpu_id, GI_ID=i)
             MIG_operator.destroy_ins(gpu_id, i)
             update_uuid(gpu_id, i, 'destroy')
 
@@ -279,7 +301,10 @@ class woker:
                     if isinstance(self.GPU_list[gpu_id][i][0], offline_job):
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins(gpu_id, config)
+                        time.sleep(2)
+                        self.GPU_list[gpu_id][i][0].gi_id = ID
                         update_uuid(gpu_id, ID, type)
+                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                         UUID = 0
                         for j in UUID_table[gpu_id].keys():
                             if int(UUID_table[gpu_id][j]) == int(ID):
@@ -291,7 +316,9 @@ class woker:
                         GI_ID = self.GPU_list[gpu_id][i][0].gi_id
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+                        time.sleep(2)
                         update_uuid(gpu_id, ID, type)
+                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                         UUID = 0
                         for j in UUID_table[gpu_id].keys():
                             if int(UUID_table[gpu_id][j]) == int(ID):
@@ -385,9 +412,31 @@ class woker:
                 JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
                     type ='pause', JobID = jobid
                 ))
-       
-                
+    
 
+    def periodic_load_update(self):
+        while True:
+            self.load_update()
+            time.sleep(2)
+
+    def load_update(self):
+        global ip, port, node, busy
+        for i in range(0, num_GPU):
+            busy[i] = calculate_busy(gpu_list=self.GPU_list[i], config_list=self.config_list[i], monitor_result= busy_table[i])
+
+        print(self.GPU_list[i], self.config_list[i], busy_table[i], busy[i])
+      
+        for i in range(0, num_GPU):
+            with grpc.insecure_channel(f'{ip}:{port}') as channel:
+                stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
+
+                Load = stub.Load(server_scherduler_pb2.LoadInformation(
+                    name = node, GPU_ID=i , load = busy[i]
+                    ))
+  
+
+    
+       
 
 
 
@@ -424,13 +473,14 @@ class woker:
 class GPU_monitor:
     def __init__(self):
         self.running = True
+    
 
     def start_GPU_monitor(self, gpu_id, gi_id):
         while self.running:
             cmd = f'dcgmi dmon -e 1002 -d 1000 -i {gpu_id}/{gi_id}'
             process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, text=True)
-
-            while self.running:
+            start_time = time.time() 
+            while self.running and  time.time() - start_time < 3:
                 output = process.stdout.readline()
                 output = output.strip()
                 if output == '' and process.poll() is not None:
@@ -439,26 +489,16 @@ class GPU_monitor:
                     if len(output.split()) != 3:
                         continue
                     else:
-
-
-                        load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= float(output.split()[2]) * 100)
-        load_submission(gpu_id=int(gpu_id), GI_ID=int(gi_id), load= -1)
+                        busy_table[gpu_id][int(gi_id)] = float(output.split()[2]) 
+            process.terminate() 
+            process.wait()
 
     def stop(self):
         self.running = False
 
 
 
-for i in range(0, num_GPU):
-    UUID_table[i] = {
 
-    }
-
-    static_partition[i] = []
-
-    monitor_table[i] = {
-
-    }
 
 def WorkerService():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -491,11 +531,11 @@ def update_uuid(gpu_id, GI_ID, type):
 def stop_monitor(gpu_id, GI_ID):
     monitor = monitor_table[gpu_id][GI_ID] 
     monitor.stop()
+    del monitor_table[gpu_id][GI_ID]
 
 def regist_worker():
     global ip, port, node
    
-
     def get_local_ip():
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
@@ -514,16 +554,5 @@ def regist_worker():
             name = node, ip = local_ip , port = 50051
             ))
 
-def load_submission(gpu_id, GI_ID, load):
-    global ip, port, node
-    with grpc.insecure_channel(f'{ip}:{port}') as channel:
-        stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
-
-        Load = stub.Load(server_scherduler_pb2.LoadInformation(
-            name = node, GPU_ID=gpu_id , GI_ID= GI_ID, load = load
-            ))
 
 
-
-
-# def job_state_update(jobid, ):

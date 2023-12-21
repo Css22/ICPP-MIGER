@@ -74,7 +74,7 @@ import node.GPU_worker as GPU_worker
 # GPU_worker.stop_monitor(0, ID_1)
 # MIG_operator.destroy_ins(0, ID_1)
 # # GPU_worker.update_uuid(0,ID_1, 'create')
-# ID_2 = MIG_operator.create_ins(0,'2g.20gb')
+
 # GPU_worker.update_uuid(0,ID_2, 'create')
 
 # process = subprocess.Popen(['nvidia-smi', '-L'], stdout=subprocess.PIPE, text=True)
@@ -83,18 +83,30 @@ import node.GPU_worker as GPU_worker
 # print(output)
 
 
-# MIG_operator.destroy_ins(0, ID_1)
+
 # GPU_worker.update_uuid(0,ID_1, 'destroy')
 # MIG_operator.destroy_ins(0, ID_2)
 # GPU_worker.update_uuid(0,ID_2, 'destroy')
+time.sleep(1)
+ID_1 = MIG_operator.create_ins(0,'1c-2g-20gb')
+MIG_operator.destroy_ins(0, ID_1)
+
+time.sleep(5)
+ID_1 = MIG_operator.create_ins(0,'1c-2g-20gb')
+MIG_operator.destroy_ins(0, ID_1)
+# MIG_operator.destroy_ins(0, 3)
+# ID = MIG_operator.create_ins(gpu=0, ins='1c-4g-40gb')
+
+# MIG_operator.destroy_ins(0, 3)
+# MIG_operator.destroy_ins(0, 4)
+# MIG_operator.destroy_ins(0, 5)
+# MIG_operator.destroy_ins(0, 13)
 
 
-
-
-MIG_operator.destroy_ins(0, 3)
-MIG_operator.destroy_ins(0, 4)
-MIG_operator.destroy_ins(0, 5)
-MIG_operator.destroy_ins(0, 13)
+# MIG_operator.destroy_ins(0, 7)
+# MIG_operator.destroy_ins(0, 8)
+# MIG_operator.destroy_ins(0, 9)
+# MIG_operator.destroy_ins(0, 10)
 # MIG_operator.destroy_ins(0, 11)
 # MIG_operator.destroy_ins(0, 12)
 # MIG_operator.destroy_ins(0, 13)

@@ -25,6 +25,7 @@ class online_job:
 
 class offline_job: 
     def __init__(self, model_name, batch_Size, epoch, jobid=0):
+        self.gi_id = -1
         self.model_name = model_name
         self.batch_Size = batch_Size
         self.epoch = epoch
@@ -523,3 +524,97 @@ def search_solution(jobs, config):
                 jobs_reverse[i][1].gi_id = solution[i]
 
     clean_tree()
+
+
+def check_speedup(offline_job, config):
+    dir = '/data/zbw/MIG/MIG/ATC-MIG/jobs/profile/offline_result/'
+    config_list = ['1c-1g-10gb', '1c-2g-20gb', '1c-3g-40gb', '1c-4g-40gb', '1c-7g-80gb']
+    path = dir + offline_job.model_name
+    index = config_list.index(config)
+    ori_speed = 0
+    pri_speed = 0
+    speed_up = 0
+    resource_speed  = 0
+
+    with open(path, 'r') as file:
+        for line in file:
+            lines = line.strip().split(" ")
+            if lines[0] == config:
+                
+                ori_speed = lines[1]
+            if lines[0] == config_list[index-1]:
+              
+                pri_speed = lines[1]
+    file.close()
+
+
+    resource_speed  = config_map.get(config)/ config_map.get(config_list[index-1])
+  
+    if pri_speed == 'error':
+        return True
+    
+    speed_up = (float(pri_speed))/float(ori_speed)
+
+    if speed_up/resource_speed >= 1:
+        return True
+    else:
+        return False
+
+def calculate_utilization(job, config, monitor_result):
+    dir = '/data/zbw/MIG/MIG/ATC-MIG/jobs/profile/offline_profile/'
+    utilization = 0  
+    if isinstance(job, online_job):
+        dir = '/data/zbw/MIG/MIG/ATC-MIG/jobs/profile/online_profile/'
+        path = dir + job.model_name
+
+        with open(path, 'r') as file:
+            lines = file.readlines()  # 读取所有行到一个列表中
+            lines.reverse()
+         
+            for line in lines:
+                result = line.strip().split(" ")
+                MIG_config = result[0].split("+")[0]
+                SM = float(result[0].split("+")[1])
+                if result[3] != 'error' and MIG_config == config and float(result[3]) * 1000 < job.qos:
+                    file.close()
+                    return SM/100
+                
+        file.close()
+
+    else:
+        utilization = monitor_result
+
+    return utilization 
+
+def calculate_busy(config_list, gpu_list, monitor_result):
+    utilization = 0
+
+    for i in range(0, len(config_list)):
+        
+        A100_percnetage = config_map.get(config_list[i])/7
+        MIG_utilizaiton = 0
+
+        if len(gpu_list[i]) == 2:
+
+            MIG_utilizaiton = 1 
+
+        else:
+            if isinstance(gpu_list[i][0], offline_job):
+                if config_map.get(config_list[i]) == 1:
+                    MIG_utilizaiton = 1
+                elif check_speedup(gpu_list[i][0], config_list[i]):
+                    MIG_utilizaiton = 1
+                else:
+                    GI_ID = gpu_list[i][0].gi_id
+                    if int(GI_ID) not in monitor_result.keys():
+                        monitor_result[int(GI_ID)] = 0 
+                    MIG_utilizaiton = calculate_utilization(gpu_list[i][0], config_list[i], monitor_result[int(GI_ID)])
+            else:
+                GI_ID = gpu_list[i][0].gi_id
+                if int(GI_ID) not in monitor_result.keys():
+                    monitor_result[int(GI_ID)] = 0 
+                MIG_utilizaiton = calculate_utilization(gpu_list[i][0], config_list[i], monitor_result[int(GI_ID)])
+   
+        utilization = utilization + MIG_utilizaiton * A100_percnetage
+
+    return utilization

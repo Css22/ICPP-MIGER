@@ -20,19 +20,8 @@ class SchedulerObject:
 
     def update_load(self, request):
         with self.lock:
-            if request.GPU_ID not in self.load[request.name].keys():
-                self.load[request.name][request.GPU_ID] = {}
-
-            self.load[request.name][request.GPU_ID][request.GI_ID] = request.load
-            if request.load == -1:
-                del self.load[request.name][request.GPU_ID][request.GI_ID]
-            
-        self.calcute_load(name=request.name, GPU_ID=request.GPU_ID)
-
-    def calcute_load(self, name, GPU_ID):
-        with self.lock:
-            a = 1
-
+            self.load[request.name][request.GPU_ID] = request.load
+        print(self.load)
 Scheduler = SchedulerObject()
 
 def SchedulerService():

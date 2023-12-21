@@ -71,30 +71,38 @@ for i in online_jobs:
 for i in offline_jobs:
     jobs.append(i)
 
-
+GPU_worker.regist_worker()
 node1 = woker()
-
-
 
 
 generate_jobid(jobs)
 jobs = generate_jobs()
-jobs[4].epoch = 4
+# jobs[4].epoch = 4
 
+node1.start_update_load()
 node1.node_schedule(new_job=jobs[0], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
 
-time.sleep(2)
+time.sleep(10)
 node1.node_schedule(new_job=jobs[1], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
 
-time.sleep(2)
+time.sleep(10)
 node1.node_schedule(new_job=jobs[2], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
+print(jobs[2].gi_id)
 
-time.sleep(2)
+time.sleep(10)
 node1.node_schedule(new_job=jobs[3], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
+print(jobs[3].gi_id)
+
+
+
+
+# while True:
+#     time.sleep(1)
+#     print(GPU_worker.busy_table, node1.GPU_list[0], node1.config_list[0])
 # jobs[3].epoch = 10
 # node1.executor(job=jobs[0], UUID='MIG-2428a716-ba1a-5eae-959f-22f6c93b0f14')
 # node1.executor(job=jobs[3], UUID='MIG-b9073a99-3746-564b-bb04-f5f719f2771c')

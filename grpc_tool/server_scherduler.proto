@@ -47,9 +47,8 @@ message ReplyPrediction {
 
 message LoadInformation {
     int32 GPU_ID = 1;
-    int32 GI_ID = 2;
-    float load = 3;
-    string name = 4;
+    float load = 2;
+    string name = 3;
 }
 
 message JobInformation {
