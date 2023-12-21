@@ -97,13 +97,16 @@ class woker:
                         self.miso_partition_optimizer(jobs, gpu_id)
                         return False
                     else:
+                      
                         self.throughput[gpu_id] = throught_put
+                        
                         self.sorted(gpu_id)
                         self.termination(gpu_id)
                         self.creation(gpu_id)
                 else:
                     throught_put = self.miso_partition_optimizer(jobs, gpu_id)
                     self.throughput[gpu_id] = throught_put
+                   
                     self.sorted(gpu_id)
                     self.termination(gpu_id)
                     self.creation(gpu_id)
@@ -403,6 +406,7 @@ class woker:
                             
                 jobs.remove(tmp_job)
                 if flag:
+                    MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
                     self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
                     self.sorted(gpu_index)
                     self.termination(gpu_index)
@@ -459,9 +463,10 @@ class woker:
 
     def sorted(self, gpu_id):
         combined = sorted(zip(self.config_list[gpu_id], self.GPU_list[gpu_id]), key=lambda x: (-reverser_map[x[0]]))
-
-        sorted_list1, sorted_list2 = zip(*combined)
-
+        if combined:
+            sorted_list1, sorted_list2 = zip(*combined)
+        else:
+            sorted_list1, sorted_list2 = [], []
         sorted_list1 = list(sorted_list1)
         sorted_list2 = list(sorted_list2)
 
@@ -477,7 +482,7 @@ class GPU_monitor:
 
     def start_GPU_monitor(self, gpu_id, gi_id):
         while self.running:
-            cmd = f'dcgmi dmon -e 1002 -d 1000 -i {gpu_id}/{gi_id}'
+            cmd = f'dcgmi dmon -e 1002 -d 1000 -i {gpu_id}/{gi_id}/0'
             process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, text=True)
             start_time = time.time() 
             while self.running and  time.time() - start_time < 3:

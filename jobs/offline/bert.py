@@ -6,7 +6,6 @@ from torch.optim import AdamW
 from transformers import get_scheduler
 import torch
 import time
-from tqdm.auto import tqdm
 
 
 
@@ -56,7 +55,6 @@ def bert_entry(epoch, initialize, item):
 
 
     result = 0 
-    progress_bar = tqdm(range(num_training_steps))
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
     model.train()
@@ -78,6 +76,5 @@ def bert_entry(epoch, initialize, item):
             optimizer.step()
             lr_scheduler.step()
             optimizer.zero_grad()
-            progress_bar.update(1)
         result = time.time() - start_time
     return result

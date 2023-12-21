@@ -184,7 +184,6 @@ if __name__ == "__main__":
         else:
             output=model(input).cpu() 
         end_time = time.time()
-        break
 # if __name__ == "__main__":
 #     path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/online_profile/'
 #     parser = argparse.ArgumentParser()

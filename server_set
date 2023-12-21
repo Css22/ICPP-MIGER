@@ -1,12 +1,22 @@
 1: 安装NVIDIA 12.0的GPU驱动
 
-2: 利用 envs Abacus文件夹进行迁移
+2: 利用envs Abacus文件夹进行迁移
     packaging.version.InvalidVersion: Invalid version: '0.10.1,<0.11' ::: pip install --upgrade transformers
-
     通过scp 命令传递数据集
-    
-    grpc 的安装
-3: 配置代理 proxychains
+3: 运行test.sh检测环境是否正确
+    这需要修改online 任务的 entry.
+4: 配置代理 proxychains
+    1: 配置proxychains
+    2: 运行xcore核心
+        nohup /home/zbw/xcore/xray run -c config.json  &
+
+5: dcgm monitor的安装
+    sudo apt-key del 7fa2af80
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
+    wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
+    sudo dpkg -i cuda-keyring_1.0-1_all.deb
+    sudo apt-get update
+    sudo apt-get install -y datacenter-gpu-manager
 
 4: git clone 确保路径为：/data/zbw/MIG/MIG/ATC-MIG
 4: 运行检测脚本，检测jobs是否可用

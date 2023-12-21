@@ -57,7 +57,6 @@ def mobilenet_entry(epoch, initialize, item):
 
             running_loss += loss.item()
             if i % 100 == 99:  # 每100批次打印一次
-                print(f"[Epoch {epoch + 1}, Batch {i + 1}] Loss: {running_loss / 100:.4f}")
                 running_loss = 0.0
         result = time.time() - start_time
     return result

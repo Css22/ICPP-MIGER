@@ -106,6 +106,5 @@ def unet_entry(epoch, initialize, item):
         item[0] = epoch
         start_time = time.time()
         train_loss = train_epoch(model, train_loader, criterion, optimizer)
-        print(f"Epoch {epoch+1}/{epochs}, Loss: {train_loss:.4f}")
         result = time.time() - start_time
     return result
