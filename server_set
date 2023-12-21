@@ -1,4 +1,5 @@
-1: 利用 environment.yml 迁移 环境
+1: 安装NVIDIA 12.0的GPU驱动
+2: 利用 environment.yml 迁移 环境
 
     需要手动安装的部分：
     - de-core-news-sm==3.7.0
@@ -9,5 +10,7 @@
 
 
     grpc 的安装
+3: 配置代理 proxychains
 
-2: 运行检测脚本，检测jobs是否可用
+
+4: 运行检测脚本，检测jobs是否可用

@@ -31,7 +31,7 @@ def vit_entry(epoch, initialize, item):
     model = model.cuda()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    item = 0
+    item_em = 0
     result = 0
 
     num_epochs = epoch
@@ -53,10 +53,10 @@ def vit_entry(epoch, initialize, item):
 
             running_loss += loss.item()
             if i % 100 == 0:
-                item = item + 1
+                item_em = item_em + 1
                 result = time.time() - start_time
                 start_time = time.time()
                 running_loss = 0.0
-                if item == 2:
+                if item_em == 2:
                     break
     return result

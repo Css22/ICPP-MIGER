@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 jobs/offline/data/
+environment.tar.gz
