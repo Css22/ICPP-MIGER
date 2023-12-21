@@ -1,2 +1,7 @@
 1: 利用 environment.yml 迁移 环境
+    1:Pip subprocess error:
+    ERROR: Could not find a version that satisfies the requirement de-core-news-sm==3.7.0 (from versions: none)
+    ERROR: No matching distribution found for de-core-news-sm==3.7.0
+
+
 2: 运行检测脚本，检测jobs是否可用

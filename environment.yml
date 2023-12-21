@@ -111,7 +111,6 @@ dependencies:
     - cycler==0.11.0
     - cymem==2.0.8
     - datasets==2.14.5
-    - de-core-news-sm==3.7.0
     - dill==0.3.7
     - docker-pycreds==0.4.0
     - efficientnet-pytorch==0.7.1
