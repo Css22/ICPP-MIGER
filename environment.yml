@@ -119,8 +119,6 @@ dependencies:
     - filelock==3.11.0
     - frozenlist==1.4.0
     - fsspec==2023.6.0
-    - grpcio==1.60.0
-    - grpcio-tools==1.60.0
     - gym==0.26.2
     - gym-notices==0.0.8
     - huggingface-hub==0.18.0
