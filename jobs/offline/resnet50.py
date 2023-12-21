@@ -4,7 +4,7 @@ import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
 import time
-path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
+path = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/CIFAR10'
 # 设置设备
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

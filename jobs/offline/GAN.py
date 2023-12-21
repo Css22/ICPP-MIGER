@@ -105,7 +105,7 @@ def GAN_entry(epoch, initialize, item):
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
     torch.use_deterministic_algorithms(True) # Needed for reproducible results
-    dataroot = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/celeba'
+    dataroot = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/celeba'
 
 
 

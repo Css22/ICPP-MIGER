@@ -1,16 +1,11 @@
 1: 安装NVIDIA 12.0的GPU驱动
-2: 利用 environment.yml 迁移 环境
 
-    需要手动安装的部分：
-    - de-core-news-sm==3.7.0
-    - en-core-web-sm==3.7.0
-    1:Pip subprocess error:
-    ERROR: Could not find a version that satisfies the requirement de-core-news-sm==3.7.0 (from versions: none)
-    ERROR: No matching distribution found for de-core-news-sm==3.7.0
+2: 利用 envs Abacus文件夹进行迁移
+    packaging.version.InvalidVersion: Invalid version: '0.10.1,<0.11' ::: pip install --upgrade transformers
 
-
+    下载celeba数据集（通过scp 命令传递数据集）
     grpc 的安装
 3: 配置代理 proxychains
 
-
+4: git clone 确保路径为：/data/zbw/MIG/MIG/ATC-MIG
 4: 运行检测脚本，检测jobs是否可用

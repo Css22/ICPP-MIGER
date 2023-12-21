@@ -38,7 +38,7 @@ def SqueezeNet_entry(epoch, initialize, item):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  
     ])
-    path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
+    path = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/CIFAR10'
 
     train_dataset = datasets.CIFAR10(root=path, train=True, transform=transform, download=True)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)

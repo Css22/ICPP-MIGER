@@ -49,7 +49,7 @@ def deeplabv3_entry(epoch, initialize, item):
         T.Resize((256, 256), interpolation=T.InterpolationMode.NEAREST),
         T.ToTensor()
     ])
-    path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/'
+    path = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/'
  
     train_dataset = torchvision.datasets.VOCSegmentation(
         root=path, year='2012', image_set='train', download=True, transform=transform, target_transform=target_transform

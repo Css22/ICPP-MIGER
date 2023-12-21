@@ -89,7 +89,7 @@ def train_epoch(model, dataloader, criterion, optimizer):
 
 # Training loop
 def unet_entry(epoch, initialize, item):
-    path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
+    path = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/CIFAR10'
 
     train_dataset = datasets.CIFAR10(root=path, train=True, transform=transform, download=True, target_transform=target_transform)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)

@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 # from torchvision.models import vit_large_patch16_224 as vit_large
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/data/CIFAR10'
+path = '/data/zbw/MIG/MIG/ATC-MIG/jobs/offline/data/CIFAR10'
 
 
 
