@@ -150,9 +150,12 @@ if __name__ == "__main__":
    
     item.append(0)
     signal.signal(signal.SIGTERM, signal_handler)
-    
+    if jobid:
+        initialize = read_job_progress(jobid=jobid, path=util_dir)
+    else:
+        initialize = 0
     entry = model_dic.get(task)
-    initialize = read_job_progress(jobid=jobid, path=util_dir)
+   
     # result = entry(epoch)
     result = entry(epoch=epoch, initialize=int(initialize), item = item)
     
