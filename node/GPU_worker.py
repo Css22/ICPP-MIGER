@@ -505,7 +505,7 @@ class GPU_monitor:
 
 
 
-def WorkerService():
+def WorkerService(woker):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     server_scherduler_pb2_grpc.add_WorkerServiceServicer_to_server(server_scherduler_pb2_grpc.WorkerServiceServicer(), server)
     server.add_insecure_port('[::]:50051')

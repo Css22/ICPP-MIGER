@@ -73,6 +73,7 @@ for i in offline_jobs:
 
 GPU_worker.regist_worker()
 node1 = woker()
+GPU_worker.WorkerService(node1)
 
 
 generate_jobid(jobs)

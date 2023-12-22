@@ -22,6 +22,8 @@ class SchedulerObject:
         with self.lock:
             self.load[request.name][request.GPU_ID] = request.load
         print(self.load)
+
+
 Scheduler = SchedulerObject()
 
 def SchedulerService():
