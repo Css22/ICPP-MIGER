@@ -141,6 +141,24 @@ def record_job_progress(jobid, progress, path):
         json.dump(data, file, indent=4)
 
 
+def get_job(job_id, path = './configs/Job_id.json'):
+    job = None
+    with open(path, 'r') as file:
+        data = json.load(file)
+    
+    for i in data.keys():
+        if int(i) == int(job_id):
+            information = data[i].split("_")
+            if information[0] == 'online':
+                job = online_job(model_name=information[1], batch_Size=int(information[2]), qos=int(information[3]), jobid=int(i))
+            if information[0] == 'offline':
+                job = offline_job(model_name=information[1], epoch=int(information[2]), batch_Size=None, jobid=int(i))
+
+
+    return job
+
+
+
 
 import random
 from collections import deque

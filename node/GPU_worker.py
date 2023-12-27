@@ -366,6 +366,7 @@ class woker:
 
         if type == '--epoch':
             cmd = [
+                "proxychains",
                 "python",
                 f"{path}entry.py",
                 "--task",
@@ -505,9 +506,12 @@ class GPU_monitor:
 
 
 
-def WorkerService(woker):
+def WorkerService():
+    regist_worker()
+    node = woker()
+    node.start_update_load()
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    server_scherduler_pb2_grpc.add_WorkerServiceServicer_to_server(server_scherduler_pb2_grpc.WorkerServiceServicer(), server)
+    server_scherduler_pb2_grpc.add_WorkerServiceServicer_to_server(server_scherduler_pb2_grpc.WorkerServiceServicer(node), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     server.wait_for_termination()
@@ -536,6 +540,7 @@ def update_uuid(gpu_id, GI_ID, type):
 def stop_monitor(gpu_id, GI_ID):
     monitor = monitor_table[gpu_id][GI_ID] 
     monitor.stop()
+    time.sleep(1)
     del monitor_table[gpu_id][GI_ID]
 
 def regist_worker():

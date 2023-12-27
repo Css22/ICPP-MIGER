@@ -19,6 +19,7 @@ if __name__ == '__main__':
 
 
     if args.type == 'worker':
+        MIG_operator.reset_mig(0)
         GPU_worker.WorkerService()
     if args.type == 'scheduler':
-        Scheduler.SchedulerService()
+        Scheduler.start_service()
