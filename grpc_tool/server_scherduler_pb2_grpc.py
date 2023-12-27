@@ -3,7 +3,7 @@
 import grpc
 import util.sharing as util
 import grpc_tool.server_scherduler_pb2 as server__scherduler__pb2
-
+from log.job_log import *
 
 class SchedulerServiceStub(object):
     """Missing associated documentation comment in .proto file."""
@@ -42,7 +42,9 @@ class SchedulerServiceServicer(object):
         self.Scheduler = Scheduler
 
     def JobState(self, request, context):
-        print(request.type, request.JobID)
+        record_job_state(request.JobID, request.type)
+        if request.type == 'finish':
+            self.Scheduler.state_change()
         reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
         return  reply 
 

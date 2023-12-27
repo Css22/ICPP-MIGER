@@ -1,11 +1,17 @@
+from util.sharing import *
+from concurrent import futures
+from log.job_log import *
+
 import grpc
 import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
 import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
-from util.sharing import *
-from concurrent import futures
+
 import threading
 import time
 import configs.configs as configs
+from collections import deque
+
+job_queue = deque()
 
 class SchedulerObject:
     def __init__(self):
@@ -21,7 +27,6 @@ class SchedulerObject:
     def update_load(self, request):
         with self.lock:
             self.load[request.name][request.GPU_ID] = request.load
-        print(self.load)
 
     def get_min_load(self):
         min = 100
@@ -37,6 +42,11 @@ class SchedulerObject:
 
         return min_name, min_GPU_ID
 
+    def state_change(self):
+        item = job_queue[0]
+        if schedule(item.jobid):
+            item = job_queue.popleft()
+    
 Scheduler = SchedulerObject()
 
 def start_service():
@@ -48,6 +58,10 @@ def start_service():
 
     main_thread = threading.Thread(target=start_cluster)
     main_thread.start()
+
+    while True:
+        record_node_load(Scheduler.load)
+        time.sleep(20)
 
 def SchedulerService():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -81,10 +95,9 @@ def start_cluster():
     time.sleep(10)
 
     for i in jobs:
-      
-        schedule(i.jobid)
-        time.sleep(20)
-
+        if not schedule(i.jobid):
+            job_queue.append(i.jobid)
+        time.sleep(100)
 
     
 

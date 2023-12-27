@@ -428,7 +428,6 @@ class woker:
         for i in range(0, num_GPU):
             busy[i] = calculate_busy(gpu_list=self.GPU_list[i], config_list=self.config_list[i], monitor_result= busy_table[i])
 
-        print(self.GPU_list[i], self.config_list[i], busy_table[i], busy[i])
       
         for i in range(0, num_GPU):
             with grpc.insecure_channel(f'{ip}:{port}') as channel:
