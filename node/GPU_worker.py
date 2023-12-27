@@ -304,7 +304,7 @@ class woker:
                     if isinstance(self.GPU_list[gpu_id][i][0], offline_job):
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins(gpu_id, config)
-                        time.sleep(2)
+
                         self.GPU_list[gpu_id][i][0].gi_id = ID
                         update_uuid(gpu_id, ID, type)
                         start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
@@ -319,7 +319,6 @@ class woker:
                         GI_ID = self.GPU_list[gpu_id][i][0].gi_id
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
-                        time.sleep(2)
                         update_uuid(gpu_id, ID, type)
                         start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                         UUID = 0

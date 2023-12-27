@@ -49,6 +49,7 @@ def create_ins(gpu, ins):
     cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
     p = subprocess.Popen([cmd], shell=True)
     p.wait()
+    time.sleep(2)
     return ID
 
 def destroy_ins(gpu, ID):

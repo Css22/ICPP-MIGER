@@ -62,6 +62,7 @@ def schedule(jobid):
     if min_name == None:
         return False
     (ip, port) = next(iter(Scheduler.worker_table.get(min_name)))
+
     with grpc.insecure_channel(f'{ip}:{port}') as channel:
         stub = server_scherduler_pb2_grpc.WorkerServiceStub(channel)
 
@@ -78,6 +79,7 @@ def schedule(jobid):
 def start_cluster():
     jobs = generate_jobs()
     time.sleep(10)
+
     for i in jobs:
       
         schedule(i.jobid)
