@@ -103,7 +103,7 @@ def start_cluster():
         if not schedule(i.jobid):
             job_queue.put(i.jobid)
     
-        time.sleep(50)
+        time.sleep(100)
 
     
 

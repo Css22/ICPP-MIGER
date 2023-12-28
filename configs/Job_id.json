@@ -1,14 +1,14 @@
 {
     "0": "online_resnet50_32_170",
-    "1": "online_resnet152_32_170",
-    "2": "offline_bert_3",
-    "3": "offline_resnet50_3",
-    "4": "offline_bert_3",
-    "5": "offline_resnet50_3",
-    "6": "offline_bert_3",
-    "7": "offline_resnet50_3",
-    "8": "offline_bert_3",
-    "9": "offline_resnet50_3",
-    "10": "offline_resnet50_3",
-    "11": "offline_bert_3"
+    "1": "online_bert_32_250",
+    "2": "offline_bert_50",
+    "3": "offline_resnet50_30",
+    "4": "offline_GAN_50",
+    "5": "offline_GAN_50",
+    "6": "offline_resnet50_30",
+    "7": "offline_bert_50",
+    "8": "offline_resnet50_30",
+    "9": "offline_GAN_50",
+    "10": "offline_resnet50_30",
+    "11": "offline_GAN_50"
 }

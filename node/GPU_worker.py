@@ -103,7 +103,7 @@ class woker:
                             self.sorted(gpu_id)
                             self.termination(gpu_id)
                             self.creation(gpu_id)
-                            time.sleep(20)
+
                     else:
                         throught_put = self.miso_partition_optimizer(jobs, gpu_id)
                         self.throughput[gpu_id] = throught_put
@@ -112,6 +112,7 @@ class woker:
                         self.termination(gpu_id)
                         self.creation(gpu_id)
                         self.fix_job[gpu_id].append(new_job)
+                        
                     time.sleep(20)
                     return True
             
