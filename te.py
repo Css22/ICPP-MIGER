@@ -2,6 +2,7 @@ from util.sharing import *
 from node.GPU_worker import woker
 import node.GPU_worker as GPU_worker
 import node.Scheduler_worker as Scheduler_worker
+import util.MIG_operator as MIG_operator
 import random
 import time
 import os
@@ -71,16 +72,17 @@ for i in online_jobs:
 
 for i in offline_jobs:
     jobs.append(i)
-GPU_worker.regist_worker()
+# GPU_worker.regist_worker()
+
 node1 = woker()
 # GPU_worker.WorkerService()
-
+MIG_operator.reset_mig(0)
 
 generate_jobid(jobs)
 jobs = generate_jobs()
 # jobs[4].epoch = 4
 
-node1.start_update_load()
+# node1.start_update_load()
 
 
 
@@ -102,6 +104,8 @@ node1.node_schedule(new_job=jobs[3], gpu_id=0)
 print(node1.GPU_list, node1.config_list)
 print(jobs[3].gi_id)
 
+print(node1.node_schedule(new_job=jobs[3], gpu_id=0))
+print(node1.node_schedule(new_job=jobs[4], gpu_id=0))
 
 
 

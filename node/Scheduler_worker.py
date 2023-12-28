@@ -42,7 +42,7 @@ class SchedulerObject:
 
         return min_name, min_GPU_ID
 
-    def state_change(self):
+    def try_schedule(self):
         if len(job_queue) != 0:
             item = job_queue[0]
             if schedule(item.jobid):
@@ -62,7 +62,8 @@ def start_service():
 
     while True:
         record_node_load(Scheduler.load)
-        time.sleep(20)
+        Scheduler.try_schedule()
+        time.sleep(30)
 
 def SchedulerService():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -86,19 +87,23 @@ def schedule(jobid):
             ))
         
     if ReplyResult.response == 'successful':
+        print(jobid, "schedule successful")
         return True
     
     if ReplyResult.response == 'Lose':
+        print(jobid,"schedule lose" )
         return False
 
 def start_cluster():
     jobs = generate_jobs()
     time.sleep(10)
-
     for i in jobs:
         if not schedule(i.jobid):
             job_queue.append(i.jobid)
+    
         time.sleep(100)
+        for j in list(job_queue):
+            print(j)
 
     
 

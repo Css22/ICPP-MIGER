@@ -43,8 +43,6 @@ class SchedulerServiceServicer(object):
 
     def JobState(self, request, context):
         record_job_state(request.JobID, request.type)
-        if request.type == 'finish':
-            self.Scheduler.state_change()
         reply = server__scherduler__pb2.ReplyResult(response = 'successful!')
         return  reply 
 

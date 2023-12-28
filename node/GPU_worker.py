@@ -84,7 +84,7 @@ class woker:
             for j in i:
                 jobs.append(j)
         jobs.append(new_job)
-
+        print(len(jobs))
         if self.cluster_algorithm == 'miso':
             if len(jobs) <= self.max_job_per_GPU:
                 if(not self.miso_partition_optimizer(jobs, gpu_id)):
@@ -99,7 +99,6 @@ class woker:
                     else:
                       
                         self.throughput[gpu_id] = throught_put
-                        
                         self.sorted(gpu_id)
                         self.termination(gpu_id)
                         self.creation(gpu_id)
@@ -112,10 +111,10 @@ class woker:
                     self.creation(gpu_id)
                     self.fix_job[gpu_id].append(new_job)
 
-            return True
+                return True
         
-        else:
-            return False
+            else:
+                return False
             
         if self.cluster_algorithm == 'me':
             pass
@@ -573,5 +572,5 @@ def restart_dcgm():
         cmd = f'sudo service nvidia-dcgm restart'
         p = subprocess.Popen([cmd], shell=True)
         p.wait()
-        print("restart ok")
-        time.sleep(60)
+        print('dcgm service restart')
+        time.sleep(30)
