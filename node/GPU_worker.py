@@ -278,7 +278,7 @@ class woker:
                             continue
                         pid = self.jobs_pid[i[1].jobid]
                         os.kill(pid, signal.SIGTERM)
-        except KeyError:
+        except Exception as e:
             print('pid missing')
         time.sleep(3)
 
