@@ -487,7 +487,7 @@ class GPU_monitor:
     def start_GPU_monitor(self, gpu_id, gi_id):
         while self.running:
             cmd = f'dcgmi dmon -e 1002 -d 1000 -i {gpu_id}/{gi_id}/0'
-            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, text=True)
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNUL, text=True)
             start_time = time.time() 
             while self.running and  time.time() - start_time < 3:
                 output = process.stdout.readline()

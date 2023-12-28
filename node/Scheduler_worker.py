@@ -46,6 +46,7 @@ class SchedulerObject:
         if len(job_queue) != 0:
             item = job_queue[0]
             if schedule(item):
+                print(job_queue[0], item)
                 item = job_queue.popleft()
     
 Scheduler = SchedulerObject()
@@ -103,8 +104,6 @@ def start_cluster():
             job_queue.append(i.jobid)
     
         time.sleep(50)
-        for j in list(job_queue):
-            print(j)
 
     
 
