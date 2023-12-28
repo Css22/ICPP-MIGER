@@ -43,9 +43,10 @@ class SchedulerObject:
         return min_name, min_GPU_ID
 
     def state_change(self):
-        item = job_queue[0]
-        if schedule(item.jobid):
-            item = job_queue.popleft()
+        if len(job_queue) != 0:
+            item = job_queue[0]
+            if schedule(item.jobid):
+                item = job_queue.popleft()
     
 Scheduler = SchedulerObject()
 

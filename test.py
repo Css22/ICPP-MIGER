@@ -97,10 +97,11 @@ import node.GPU_worker as GPU_worker
 # MIG_operator.destroy_ins(0, 3)
 # ID = MIG_operator.create_ins(gpu=0, ins='1c-4g-40gb')
 
-MIG_operator.destroy_ins(0, 3)
-MIG_operator.destroy_ins(0, 4)
-MIG_operator.destroy_ins(0, 5)
-MIG_operator.destroy_ins(0, 13)
+# MIG_operator.reset_mig(0)
+# MIG_operator.destroy_ins(0, 3)
+# MIG_operator.destroy_ins(0, 4)
+# MIG_operator.destroy_ins(0, 5)
+# MIG_operator.destroy_ins(0, 13)
 
 
 # MIG_operator.destroy_ins(0, 7)
@@ -128,3 +129,7 @@ MIG_operator.destroy_ins(0, 13)
 
 # GPU_worker.stop_monitor(0, ID_1)
 # GPU_worker.stop_monitor(0, ID_2)
+
+
+
+GPU_worker.restart_dcgm()

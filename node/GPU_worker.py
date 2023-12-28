@@ -384,9 +384,7 @@ class woker:
             stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
          
             if p.returncode == 0:
-                JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
-                    type ='finish', JobID = jobid
-                ))
+              
                 if self.cluster_algorithm == 'miso':
                     gpu_index =-1
                     for i in range(0, len(self.GPU_list)):
@@ -411,7 +409,11 @@ class woker:
                     self.sorted(gpu_index)
                     self.termination(gpu_index)
                     self.creation(gpu_index)
+                JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                    type ='finish', JobID = jobid
+                ))
 
+                return 0
             if p.returncode == 143  or -15:
                 JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
                     type ='pause', JobID = jobid
@@ -508,6 +510,8 @@ def WorkerService():
     regist_worker()
     node = woker()
     node.start_update_load()
+    restart_thread = threading.Thread(target=restart_dcgm)
+    restart_thread.start()
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     server_scherduler_pb2_grpc.add_WorkerServiceServicer_to_server(server_scherduler_pb2_grpc.WorkerServiceServicer(node), server)
     server.add_insecure_port('[::]:50051')
@@ -564,3 +568,10 @@ def regist_worker():
 
 
 
+def restart_dcgm():
+    while True:
+        cmd = f'sudo service nvidia-dcgm restart'
+        p = subprocess.Popen([cmd], shell=True)
+        p.wait()
+        print("restart ok")
+        time.sleep(60)

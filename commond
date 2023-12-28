@@ -39,6 +39,6 @@ dcgmi group -d 6
 sudo dcgmi dmon -i 0/1 -e 1001,1002,1003,1004,1005 -d 1000
 sudo pkill -f "dcgmi dmon"
 dcgmi discovery -c   
-sudo service nvidia-dcgm stop
+sudo service nvidia-dcgm restart
 /home/zbw/xcore/xray run -c config.json
 (sudo dcgmi dmon -i 0/5 -e 1001,1002,1003,1004,1005,1006,1007,1008 -d 1000 >> /data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/offline_profile/bert_profile) & CUDA_VISIBLE_DEVICES=MIG-32522c13-1a59-5776-9d30-e0ae7b6a4874 proxychains python /data/zbw/MIG/MIG/MIG_Schedule/jobs/offline/entry.py --config test --model bert && sudo pkill -f "dcgmi dmon"
