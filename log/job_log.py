@@ -12,3 +12,6 @@ def record_node_load(load, path='./log/load_log'):
     with open(path, 'a') as file:
         log = formatted_date + ' ' + str(load)+ '\n'
         file.write(log)
+
+def handle_job_state(path = './log/job_log'):
+    pass

@@ -9,9 +9,9 @@ import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2
 import threading
 import time
 import configs.configs as configs
-from collections import deque
+import queue
 
-job_queue = deque()
+job_queue = queue.Queue()
 
 class SchedulerObject:
     def __init__(self):
@@ -43,11 +43,10 @@ class SchedulerObject:
         return min_name, min_GPU_ID
 
     def try_schedule(self):
-        if len(job_queue) != 0:
+        if not job_queue.empty():
             item = job_queue[0]
             if schedule(item):
-                print(job_queue[0], item)
-                item = job_queue.popleft()
+                item = job_queue.get()
     
 Scheduler = SchedulerObject()
 
@@ -101,7 +100,7 @@ def start_cluster():
     time.sleep(10)
     for i in jobs:
         if not schedule(i.jobid):
-            job_queue.append(i.jobid)
+            job_queue.put(i.jobid)
     
         time.sleep(50)
 

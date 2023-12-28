@@ -132,4 +132,24 @@ import node.GPU_worker as GPU_worker
 
 
 
-GPU_worker.restart_dcgm()
+# GPU_worker.restart_dcgm()
+
+
+import queue
+
+# 创建一个线程安全的队列
+q = queue.Queue()
+
+# 向队列添加一些元素
+q.put('item1')
+q.put('item2')
+
+# 访问队头元素，但不从队列中移除它
+if not q.empty():
+    first_item = q.queue[0]  # 查看队头元素
+    print("队头元素:", first_item)
+
+# 继续处理队列
+while not q.empty():
+    item = q.get()
+    print("处理元素:", item)
