@@ -258,25 +258,28 @@ class woker:
     
 
     def termination(self, gpu_id):
-        for i in self.GPU_list[gpu_id]:
-            if len(i) == 1:
-                if i[0] not in self.fix_job[gpu_id]:
-                    if i[0].jobid not in self.jobs_pid.keys():
-                        continue
-                    pid = self.jobs_pid[i[0].jobid]
-                    os.kill(pid, signal.SIGTERM) 
+        try:
+            for i in self.GPU_list[gpu_id]:
+                if len(i) == 1:
+                    if i[0] not in self.fix_job[gpu_id]:
+                        if i[0].jobid not in self.jobs_pid.keys():
+                            continue
+                        pid = self.jobs_pid[i[0].jobid]
+                        os.kill(pid, signal.SIGTERM) 
 
-            if len(i) == 2:
-                if i[0] not in self.fix_job[gpu_id]:
-                    if i[0].jobid not in self.jobs_pid.keys():
-                        continue
-                    pid = self.jobs_pid[i[0].jobid]
-                    os.kill(pid, signal.SIGTERM) 
-                if i[1] not in self.fix_job[gpu_id]:
-                    if i[1].jobid not in self.jobs_pid.keys():
-                        continue
-                    pid = self.jobs_pid[i[1].jobid]
-                    os.kill(pid, signal.SIGTERM)
+                if len(i) == 2:
+                    if i[0] not in self.fix_job[gpu_id]:
+                        if i[0].jobid not in self.jobs_pid.keys():
+                            continue
+                        pid = self.jobs_pid[i[0].jobid]
+                        os.kill(pid, signal.SIGTERM) 
+                    if i[1] not in self.fix_job[gpu_id]:
+                        if i[1].jobid not in self.jobs_pid.keys():
+                            continue
+                        pid = self.jobs_pid[i[1].jobid]
+                        os.kill(pid, signal.SIGTERM)
+        except KeyError:
+            print('pid missing')
         time.sleep(3)
 
 

@@ -44,7 +44,8 @@ class SchedulerObject:
 
     def try_schedule(self):
         if not job_queue.empty():
-            item = job_queue[0]
+
+            item = job_queue.queue[0] 
             if schedule(item):
                 item = job_queue.get()
     
