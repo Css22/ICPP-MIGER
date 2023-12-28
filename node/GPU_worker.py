@@ -403,6 +403,7 @@ class woker:
                 jobs.remove(tmp_job)
                 if flag:
                     MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
+                    self.throughput[gpu_index] = 0
                     self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
                     self.sorted(gpu_index)
                     self.termination(gpu_index)
