@@ -84,7 +84,6 @@ class woker:
             for j in i:
                 jobs.append(j)
         jobs.append(new_job)
-        print(len(jobs))
         if self.cluster_algorithm == 'miso':
             if len(jobs) <= self.max_job_per_GPU:
                 if(not self.miso_partition_optimizer(jobs, gpu_id)):

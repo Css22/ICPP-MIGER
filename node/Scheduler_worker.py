@@ -45,7 +45,7 @@ class SchedulerObject:
     def try_schedule(self):
         if len(job_queue) != 0:
             item = job_queue[0]
-            if schedule(item.jobid):
+            if schedule(item):
                 item = job_queue.popleft()
     
 Scheduler = SchedulerObject()
@@ -62,8 +62,9 @@ def start_service():
 
     while True:
         record_node_load(Scheduler.load)
-        Scheduler.try_schedule()
         time.sleep(30)
+        Scheduler.try_schedule()
+        time.sleep(5)
 
 def SchedulerService():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
