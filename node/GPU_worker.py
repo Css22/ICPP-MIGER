@@ -391,14 +391,14 @@ class woker:
                             for z in self.GPU_list[i][j]:
                                 jobs.append(z)
 
-                    flag = False
-                    tmp_job = None
-                    for j in jobs:
-                        if j.jobid == jobid:
-                            tmp_job = j
-                            gpu_index = i
-                            flag = True
-                            break 
+                        flag = False
+                        tmp_job = None
+                        for j in jobs:
+                            if j.jobid == jobid:
+                                tmp_job = j
+                                gpu_index = i
+                                flag = True
+                                break 
                             
                 jobs.remove(tmp_job)
                 if flag:
@@ -413,6 +413,7 @@ class woker:
                 ))
 
                 return 0
+            
             if p.returncode == 143  or -15:
                 JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
                     type ='pause', JobID = jobid
