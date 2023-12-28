@@ -11,6 +11,9 @@ from concurrent import futures
 from util.sharing import *
 import socket
 from itertools import permutations
+from threading import Lock
+
+temp_lock = Lock()
 busy_table ={
 
 }
@@ -78,45 +81,45 @@ class woker:
         self.update_thread.start()
 
     def node_schedule(self, new_job, gpu_id):
-
-        jobs = []
-        for i in self.GPU_list[gpu_id]:
-            for j in i:
-                jobs.append(j)
-        jobs.append(new_job)
-        if self.cluster_algorithm == 'miso':
-            if len(jobs) <= self.max_job_per_GPU:
-                if(not self.miso_partition_optimizer(jobs, gpu_id)):
-                    return False
-            
-                elif isinstance(new_job, offline_job):
-                    throught_put = self.miso_partition_optimizer(jobs, gpu_id)
-                    if throught_put < self.throughput[gpu_id]:
-                        jobs.remove(new_job)
-                        self.miso_partition_optimizer(jobs, gpu_id)
+        with temp_lock:
+            jobs = []
+            for i in self.GPU_list[gpu_id]:
+                for j in i:
+                    jobs.append(j)
+            jobs.append(new_job)
+            if self.cluster_algorithm == 'miso':
+                if len(jobs) <= self.max_job_per_GPU:
+                    if(not self.miso_partition_optimizer(jobs, gpu_id)):
                         return False
+                
+                    elif isinstance(new_job, offline_job):
+                        throught_put = self.miso_partition_optimizer(jobs, gpu_id)
+                        if throught_put < self.throughput[gpu_id]:
+                            jobs.remove(new_job)
+                            self.miso_partition_optimizer(jobs, gpu_id)
+                            return False
+                        else:
+                        
+                            self.throughput[gpu_id] = throught_put
+                            self.sorted(gpu_id)
+                            self.termination(gpu_id)
+                            self.creation(gpu_id)
                     else:
-                      
+                        throught_put = self.miso_partition_optimizer(jobs, gpu_id)
                         self.throughput[gpu_id] = throught_put
+                    
                         self.sorted(gpu_id)
                         self.termination(gpu_id)
                         self.creation(gpu_id)
-                else:
-                    throught_put = self.miso_partition_optimizer(jobs, gpu_id)
-                    self.throughput[gpu_id] = throught_put
-                   
-                    self.sorted(gpu_id)
-                    self.termination(gpu_id)
-                    self.creation(gpu_id)
-                    self.fix_job[gpu_id].append(new_job)
+                        self.fix_job[gpu_id].append(new_job)
 
-                return True
-        
-            else:
-                return False
+                    return True
             
-        if self.cluster_algorithm == 'me':
-            pass
+                else:
+                    return False
+                
+            if self.cluster_algorithm == 'me':
+                pass
     
 
 
@@ -382,37 +385,37 @@ class woker:
             stub = server_scherduler_pb2_grpc.SchedulerServiceStub(channel)
          
             if p.returncode == 0:
-              
-                if self.cluster_algorithm == 'miso':
-                    gpu_index =-1
-                    for i in range(0, len(self.GPU_list)):
-                        jobs = []
-                        for j in range(0, len(self.GPU_list[i])):
-                            for z in self.GPU_list[i][j]:
-                                jobs.append(z)
+                with temp_lock:
+                    if self.cluster_algorithm == 'miso':
+                        gpu_index =-1
+                        for i in range(0, len(self.GPU_list)):
+                            jobs = []
+                            for j in range(0, len(self.GPU_list[i])):
+                                for z in self.GPU_list[i][j]:
+                                    jobs.append(z)
 
-                        flag = False
-                        tmp_job = None
-                        for j in jobs:
-                            if j.jobid == jobid:
-                                tmp_job = j
-                                gpu_index = i
-                                flag = True
-                                break 
-                            
-                jobs.remove(tmp_job)
-                if flag:
-                    MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
-                    self.throughput[gpu_index] = 0
-                    self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
-                    self.sorted(gpu_index)
-                    self.termination(gpu_index)
-                    self.creation(gpu_index)
-                JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
-                    type ='finish', JobID = jobid
-                ))
+                            flag = False
+                            tmp_job = None
+                            for j in jobs:
+                                if j.jobid == jobid:
+                                    tmp_job = j
+                                    gpu_index = i
+                                    flag = True
+                                    break 
+                                
+                    jobs.remove(tmp_job)
+                    if flag:
+                        MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
+                        self.throughput[gpu_index] = 0
+                        self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
+                        self.sorted(gpu_index)
+                        self.termination(gpu_index)
+                        self.creation(gpu_index)
+                    JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                        type ='finish', JobID = jobid
+                    ))
 
-                return 0
+                    return 0
             
             if p.returncode == 143  or -15:
                 JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(

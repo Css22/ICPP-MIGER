@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo python main.py --type worker
+python main.py --type worker
