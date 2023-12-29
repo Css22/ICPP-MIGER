@@ -636,3 +636,62 @@ def calculate_busy(config_list, gpu_list, monitor_result):
         utilization = utilization + MIG_utilizaiton * A100_percnetage
 
     return utilization
+
+
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+    
+def get_throughput_double_list():
+    throught_list = {}
+    file_path = './jobs/profile/result/2'
+    num = 0 
+    with open(file_path, 'r') as f:
+        item = ''
+        config  = ''
+        offline = ''
+        offline_MPS =  0
+        offline_runtime = 0
+        online = ''
+        online_batch = 0
+        online_MPS = 0
+        online_runtime = 0
+        for line in f:
+            results = line.split(" ")
+            if results[0] == 'offline':
+                config = results[1]
+                offline = results[2]
+                offline_MPS = int(results[3])
+                if results[7].strip() != 'error':
+                    offline_runtime = float(results[7].strip())
+                else:
+                    offline_runtime = 'error'
+        
+            if results[0] == 'online':
+                online = results[2]
+                online_batch = int(results[3])
+                online_MPS = int(results[4])
+                if is_float(results[7]):
+                    online_runtime = float(results[7]) * 1000
+                else:
+                    online_runtime = 'error'
+            num = num + 1
+            if config  not in throught_list.keys():
+                throught_list[config]  = []
+            if num % 2 ==0:
+                tmp_item  = []
+                tmp_item.append(offline)
+                tmp_item.append(offline_MPS)
+                tmp_item.append(online)
+                tmp_item.append(online_batch)
+                tmp_item.append(online_MPS)
+                tmp_item.append(offline_runtime)
+                tmp_item.append(online_runtime)
+                throught_list[config].append(tmp_item)
+
+    f.close()
+    
+    return throught_list
