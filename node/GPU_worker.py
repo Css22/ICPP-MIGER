@@ -353,8 +353,6 @@ class woker:
                                     break
                            
                             if flag_valid:
-                             
-
                                 all_combinations2 = list(permutations(i, len(tmp)))
                                 tmp_config = []
                                 tmp_throught = 0
