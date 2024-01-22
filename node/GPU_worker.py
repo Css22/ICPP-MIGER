@@ -69,13 +69,17 @@ class woker:
         self.GPU_list = []
         self.config_list = []
         self.throughput = []
+        self.SM_percentage = []
         self.max_job_per_GPU = max_job_per_GPU
+
+
 
         for i in range(0, num_GPU):
             self.GPU_list.append([])
             self.throughput.append(0)
             self.config_list.append([])
             self.fix_job.append([])
+            self.SM_percentage.append([])
 
     def start_update_load(self):
         self.update_thread = threading.Thread(target=self.periodic_load_update)
@@ -410,7 +414,7 @@ class woker:
         for i in range(0, len(online_jobs)):
             self.GPU_list[GPU_index].append([online_jobs[i]])
             self.config_list[GPU_index].append(config_list[i])
-  
+
         for i in best_concurrency.keys():
             offline = best_concurrency.get(i)
  
@@ -513,11 +517,13 @@ class woker:
                             continue
                         pid = self.jobs_pid[i[0].jobid]
                         os.kill(pid, signal.SIGTERM) 
+
                     if i[1] not in self.fix_job[gpu_id]:
                         if i[1].jobid not in self.jobs_pid.keys():
                             continue
                         pid = self.jobs_pid[i[1].jobid]
                         os.kill(pid, signal.SIGTERM)
+                    
         except Exception as e:
             print('pid missing')
         time.sleep(3)
@@ -578,7 +584,10 @@ class woker:
                         if int(UUID_table[gpu_id][j]) == int(GI_ID):
                             UUID = j
                             break
-                    continue
+                    
+                    
+                    self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID, MPS_flag=True, MPS_percentage=100)
+                    self.executor(job=self.GPU_list[gpu_id][i][1], UUID=UUID, MPS_flag=True, MPS_percentage=100)
             else:
                 pass
     
@@ -705,7 +714,10 @@ class woker:
                 thread = threading.Thread(target=self.run_process, args=(UUID, offline_path, job.model_name, '--epoch' ,job.epoch ,job.jobid))
             thread.start()
         else:
-            pass
+            if isinstance(job, online_job):
+
+                thread = threading.Thread(target=self.run_process, args=(UUID, online_path, job.model_name, '--batch' ,job.batch_Size ,job.jobid))
+            
       
 
     def sorted(self, gpu_id):
@@ -714,6 +726,7 @@ class woker:
             sorted_list1, sorted_list2 = zip(*combined)
         else:
             sorted_list1, sorted_list2 = [], []
+
         sorted_list1 = list(sorted_list1)
         sorted_list2 = list(sorted_list2)
 

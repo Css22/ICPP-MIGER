@@ -7,4 +7,3 @@ model = nn.Linear(10, 5).to(device)
 input_data = torch.randn(32, 10).to(device)
 output = model(input_data)
 
-print("Output Shape:", output.shape)

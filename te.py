@@ -89,16 +89,32 @@ node1.cluster_algorithm = 'me'
 
 jobs1  = []
 test_job1 = online_job(model_name='bert', batch_Size=32, qos=200)
+
+
+
 # jobs1.append(jobs[0])
 
 # jobs1.append(jobs[1])
 # jobs1.append(jobs[2])
 jobs1.append(test_job1)
 jobs1.append(jobs[3])
-print(jobs[3].model_name)
+
+for i in jobs1:
+    
+    print(i)
+
+
 print(node1.partition_optimizer(jobs=jobs1, GPU_index=0))
-print(node1.config_list, node1.GPU_list)
-print(jobs[3].gi_id)
+print(node1.GPU_list)
+# print(jobs[3].model_name)
+
+# print(node1.config_list, node1.GPU_list)
+# print(jobs[3].gi_id)
+
+
+
+
+
 # node1.node_schedule(new_job=jobs[0], gpu_id=0)
 # print(node1.GPU_list, node1.config_list)
 
