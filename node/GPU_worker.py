@@ -585,7 +585,18 @@ class woker:
                             UUID = j
                             break
                     
-                    
+                    online_job_item = None
+                    offline_job_item = None
+
+                    if isinstance(self.GPU_list[gpu_id][0], online_job):
+                        online_job_item = self.GPU_list[gpu_id][0]
+                        offline_job_item = self.GPU_list[gpu_id][1]
+                    else:
+                        online_job_item  = self.GPU_list[gpu_id][1]
+                        offline_job_item = self.GPU_list[gpu_id][0]
+                        
+                    SM_1, SM_2 = find_optimal_SM(online_job=online_job_item, offline_job=offline_job_item, config=)
+
                     self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID, MPS_flag=True, MPS_percentage=100)
                     self.executor(job=self.GPU_list[gpu_id][i][1], UUID=UUID, MPS_flag=True, MPS_percentage=100)
             else:
@@ -834,3 +845,28 @@ def restart_dcgm():
         p.wait()
         print('dcgm service restart')
         time.sleep(30)
+
+
+
+def find_optimal_SM(self, online_job: online_job, offline_job: offline_job, config):
+    global throught_list, online_job_data
+    flag = False
+    base = 0 
+    for i in online_job_data:
+        if i.model_name == offline_job.model_name  and i.config == '1c-7g-80gb' and i.batch_Size == None:
+            base = float(i.average_time)
+            break
+        
+
+    throught = 0 
+    for i in throught_list[config]:
+        if i[2] == online_job.model_name and int(i[3]) == int(online_job.batch_Size) and i[0] == offline_job.model_name:
+            if is_float(i[5]) and is_float(i[6]):
+                if float(i[6]) <= float(online_job.qos):
+                    flag = True
+                    if base/float(i[5]) >= throught:
+                        throught = base/float(i[5])
+    if flag:
+        return throught
+    else:
+        return False
