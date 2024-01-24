@@ -72,11 +72,11 @@ for i in online_jobs:
 
 for i in offline_jobs:
     jobs.append(i)
-# GPU_worker.regist_worker()
+GPU_worker.regist_worker()
 
 node1 = woker()
 node1.cluster_algorithm = 'me'
-# GPU_worker.WorkerService()
+GPU_worker.WorkerService()
 # MIG_operator.reset_mig(0)
 
 # generate_jobid(jobs)

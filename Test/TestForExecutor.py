@@ -84,28 +84,50 @@ def test_main():
 
     jobs1  = [] 
     test_job1 = online_job(model_name='bert', batch_Size=32, qos=200)
+    test_job2 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=1)
+    test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=2)
+    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=2)
+   
 
-
+    jobs1.append(test_job1)
+    jobs1.append(test_job2)
+    jobs1.append(test_job3)
+    jobs1.append(test_job4)
+    generate_jobid(jobs1)
 
     # jobs1.append(jobs[0])
 
     # jobs1.append(jobs[1])
     # jobs1.append(jobs[2])
 
-    jobs1.append(test_job1)
-    jobs1.append(jobs[3])
-    # print(jobs[2].model_name, jobs[2].epoch)
+    # jobs1.append(test_job1)
+    # node1.node_schedule(test_job1, gpu_id=0)
+    # # print(node1.partition_optimizer(jobs1, GPU_index=0))
+    # # print(node1.GPU_list)
+    # # jobs1.append(test_job2)
+    # # jobs1.append(test_job3)
+    # time.sleep(20)
+    # node1.node_schedule(test_job2, gpu_id=0)
     # for i in jobs1:
     #     print(i)
+    GPU_worker.regist_worker()
+    GPU_worker.WorkerService()
 
-    print(node1.partition_optimizer(jobs=jobs1, GPU_index=0))
-    print(node1.GPU_list)
-    print(node1.config_list)
-    # print(find_optimal_SM(test_job1, jobs[3], config=node1.config_list[0][0]))
+    # print(node1.partition_optimizer(jobs1, GPU_index=0))
+    # print(node1.GPU_list)
 
-    node1.sorted(0)
-    node1.termination(0)
-    node1.creation(0)
+    # for i in jobs1:
+    #     node1.node_schedule(i, 0)
+    #     print(node1.GPU_list)
+    #     time.sleep(60)
+
+    # print(node1.GPU_list)
+    # print(node1.config_list)
+    # # print(find_optimal_SM(test_job1, jobs[3], config=node1.config_list[0][0]))
+
+    # node1.sorted(0)
+    # node1.termination(0)
+    # node1.creation(0)
 
 
 def destory_MPS(UUID):

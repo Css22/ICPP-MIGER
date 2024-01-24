@@ -613,10 +613,11 @@ class woker:
 
                     MPS_operator.OpenMPS(UUID=UUID)
                     self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
-                    time.sleep(30)
+                    time.sleep(5)
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
                 else:
                     ID = online_job_item.gi_id
+                    config = self.config_list[gpu_id][i]
                     UUID = 0
                     for j in UUID_table[gpu_id].keys():
                         if int(UUID_table[gpu_id][j]) == int(ID):
