@@ -7,6 +7,7 @@ import grpc
 import grpc_tool.server_scherduler_pb2_grpc as server_scherduler_pb2_grpc
 import grpc_tool.server_scherduler_pb2 as  server_scherduler_pb2 
 import util.MIG_operator as MIG_operator
+import util.MPS_operator as MPS_operator
 from concurrent import futures
 from util.sharing import *
 import socket
@@ -566,6 +567,7 @@ class woker:
                         self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
 
                     else:
+
                         GI_ID = self.GPU_list[gpu_id][i][0].gi_id
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
@@ -576,31 +578,57 @@ class woker:
                             if int(UUID_table[gpu_id][j]) == int(ID):
                                 UUID = j
                                 break
+
+                        
+                        MPS_operator.OpenMPS(UUID=UUID)
                         self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
                 else:
-                    GI_ID = self.GPU_list[gpu_id][i][0].gi_id
+                    continue
+            else:
+                online_job_item = None
+                offline_job_item = None
+
+                if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                    online_job_item = self.GPU_list[gpu_id][i][0]
+                    offline_job_item = self.GPU_list[gpu_id][i][1]
+                else:
+                    online_job_item = self.GPU_list[gpu_id][i][1]
+                    offline_job_item = self.GPU_list[gpu_id][i][0]
+
+                if online_job_item not in self.fix_job[gpu_id]:
+                    GI_ID = online_job_item.gi_id
+                    config = self.config_list[gpu_id][i]
+                    ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+
+                    update_uuid(gpu_id, ID, type)
+                    start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                     UUID = 0
                     for j in UUID_table[gpu_id].keys():
-                        if int(UUID_table[gpu_id][j]) == int(GI_ID):
+                        if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
                             break
                     
-                    online_job_item = None
-                    offline_job_item = None
+                    
+                    SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
 
-                    if isinstance(self.GPU_list[gpu_id][0], online_job):
-                        online_job_item = self.GPU_list[gpu_id][0]
-                        offline_job_item = self.GPU_list[gpu_id][1]
-                    else:
-                        online_job_item  = self.GPU_list[gpu_id][1]
-                        offline_job_item = self.GPU_list[gpu_id][0]
-                        
-                    SM_1, SM_2 = find_optimal_SM(online_job=online_job_item, offline_job=offline_job_item, config=)
+                    MPS_operator.OpenMPS(UUID=UUID)
+                    self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
+                    time.sleep(30)
+                    self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+                else:
+                    ID = online_job_item.gi_id
+                    UUID = 0
+                    for j in UUID_table[gpu_id].keys():
+                        if int(UUID_table[gpu_id][j]) == int(ID):
+                            UUID = j
+                            break
 
-                    self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID, MPS_flag=True, MPS_percentage=100)
-                    self.executor(job=self.GPU_list[gpu_id][i][1], UUID=UUID, MPS_flag=True, MPS_percentage=100)
-            else:
-                pass
+                    SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
+                    self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+
+
+
+
     
     def run_process(self, UUID, path, model_name, type, epoch, jobid):
         global ip, port, node
@@ -625,7 +653,7 @@ class woker:
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
             self.jobs_pid[jobid] = int(p.pid)
             p.wait()
-        
+
 
         if type == '--epoch':
             cmd = [
@@ -712,7 +740,7 @@ class woker:
 
 
 
-    def executor(self, job, UUID, MPS_flag = False, MPS_percentage=None):
+    def executor(self, job, UUID,MPS_flag = False, MPS_percentage=None):
         offline_path = './jobs/offline/'
         online_path = './jobs/online/'
         if not MPS_flag:
@@ -726,8 +754,15 @@ class woker:
             thread.start()
         else:
             if isinstance(job, online_job):
-
+                MPS_operator.SetPercentage(UUID=UUID, Percentage=MPS_percentage)
+                print(MPS_operator.GetPercentage(UUID=UUID))
                 thread = threading.Thread(target=self.run_process, args=(UUID, online_path, job.model_name, '--batch' ,job.batch_Size ,job.jobid))
+
+            if isinstance(job, offline_job):
+                MPS_operator.SetPercentage(UUID=UUID, Percentage=MPS_percentage)
+                thread = threading.Thread(target=self.run_process, args=(UUID, offline_path, job.model_name, '--epoch' ,job.epoch ,job.jobid))
+
+            thread.start()
             
       
 
@@ -848,7 +883,7 @@ def restart_dcgm():
 
 
 
-def find_optimal_SM(self, online_job: online_job, offline_job: offline_job, config):
+def find_optimal_SM(online_job: online_job, offline_job: offline_job, config):
     global throught_list, online_job_data
     flag = False
     base = 0 
@@ -857,7 +892,8 @@ def find_optimal_SM(self, online_job: online_job, offline_job: offline_job, conf
             base = float(i.average_time)
             break
         
-
+    SM1 = 0
+    SM2 = 0
     throught = 0 
     for i in throught_list[config]:
         if i[2] == online_job.model_name and int(i[3]) == int(online_job.batch_Size) and i[0] == offline_job.model_name:
@@ -865,8 +901,8 @@ def find_optimal_SM(self, online_job: online_job, offline_job: offline_job, conf
                 if float(i[6]) <= float(online_job.qos):
                     flag = True
                     if base/float(i[5]) >= throught:
+                        SM1 = int(i[4])
+                        SM2 = int(i[1])
                         throught = base/float(i[5])
     if flag:
-        return throught
-    else:
-        return False
+        return SM1,SM2

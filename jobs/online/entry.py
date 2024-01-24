@@ -157,6 +157,7 @@ def Test_MIG(task, batch):
 
 
 if __name__ == "__main__":
+    path = '/data/zbw/MIG/MIG/ATC-MIG/tmp_result.txt'
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str)
     parser.add_argument("--batch", type=int)
@@ -182,8 +183,13 @@ if __name__ == "__main__":
         elif task == 'deeplabv3':
             output= model(input)['out'].cpu()
         else:
-            output=model(input).cpu() 
+            output=model(input).cpu()
         end_time = time.time()
+        # print(end_time - start_time)
+        # with open(path, 'a+') as file:
+        #     output = str(end_time - start_time) + "\n"
+        #     file.write(output)
+        #     file.close()
 # if __name__ == "__main__":
 #     path = '/data/zbw/MIG/MIG/MIG_Schedule/jobs/profile/online_profile/'
 #     parser = argparse.ArgumentParser()
