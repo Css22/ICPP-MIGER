@@ -161,3 +161,6 @@ cython_debug/
 
 jobs/offline/data/
 environment.tar.gz
+
+log/job_log
+log/load_log
