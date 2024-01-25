@@ -78,22 +78,43 @@ for i in offline_jobs:
 
 
 def test_main():
-    node1 = woker()
-    node1.cluster_algorithm = 'me'
-
-
     jobs1  = [] 
-    test_job1 = online_job(model_name='bert', batch_Size=32, qos=200)
-    test_job2 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=1)
-    test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=2)
-    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=2)
+    test_job1 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=0)
+    test_job2 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=1)
+    test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=2)
+    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=3)
+    test_job5 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=4)
+    test_job6 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=5)
    
+
+    # jobs1.append(jobs[0])
+
+    # jobs1.append(jobs[1])
+    # jobs1.append(jobs[2])
 
     jobs1.append(test_job1)
     jobs1.append(test_job2)
     jobs1.append(test_job3)
     jobs1.append(test_job4)
+    jobs1.append(test_job5)
+    jobs1.append(test_job6)
     generate_jobid(jobs1)
+    # node1 = woker()
+    # node1.cluster_algorithm = 'me'
+
+
+    # jobs1  = [] 
+    # test_job1 = online_job(model_name='bert', batch_Size=32, qos=200)
+    # test_job2 = offline_job(model_name='resnet50', batch_Size=32, epoch=2, jobid=1)
+    # test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=2, jobid=2)
+    # test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=2, jobid=3)
+   
+
+    # jobs1.append(test_job1)
+    # jobs1.append(test_job2)
+    # jobs1.append(test_job3)
+    # jobs1.append(test_job4)
+    # generate_jobid(jobs1)
 
     # jobs1.append(jobs[0])
 
@@ -101,7 +122,9 @@ def test_main():
     # jobs1.append(jobs[2])
 
     # jobs1.append(test_job1)
-    # node1.node_schedule(test_job1, gpu_id=0)
+    # print(node1.node_schedule(test_job1, gpu_id=0))
+    # time.sleep(20)
+    # print(node1.node_schedule(test_job2, gpu_id=0))
     # # print(node1.partition_optimizer(jobs1, GPU_index=0))
     # # print(node1.GPU_list)
     # # jobs1.append(test_job2)

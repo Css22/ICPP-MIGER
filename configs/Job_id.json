@@ -1,5 +1,8 @@
 {
     "0": "online_bert_32_200",
-    "1": "offline_resnet50_5",
-    "2": "offline_resnet50_5"
+    "1": "online_bert_32_200",
+    "2": "offline_resnet50_1",
+    "3": "offline_resnet50_1",
+    "4": "offline_resnet50_1",
+    "5": "offline_resnet50_1"
 }

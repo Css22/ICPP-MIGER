@@ -695,19 +695,46 @@ class woker:
                                     flag = True
                                     break 
                                 
-                    jobs.remove(tmp_job)
-                    if flag:
-                        MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
-                        self.throughput[gpu_index] = 0
-                        self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
-                        self.sorted(gpu_index)
-                        self.termination(gpu_index)
-                        self.creation(gpu_index)
-                    JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
-                        type ='finish', JobID = jobid
-                    ))
+                        jobs.remove(tmp_job)
+                        if flag:
+                            MIG_operator.destroy_ins(gpu_index, tmp_job.gi_id)
+                            self.throughput[gpu_index] = self.miso_partition_optimizer(jobs=jobs, gpu_id= gpu_index)
+                            self.sorted(gpu_index)
+                            self.termination(gpu_index)
+                            self.creation(gpu_index)
+                            JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                                type ='finish', JobID = jobid
+                            ))
 
-                    return 0
+                        return 0
+                    if self.cluster_algorithm == 'me':
+                        gpu_index =-1
+                        for i in range(0, len(self.GPU_list)):
+                            jobs = []
+                            for j in range(0, len(self.GPU_list[i])):
+                                for z in self.GPU_list[i][j]:
+                                    jobs.append(z)
+
+                            flag = False
+                            tmp_job = None
+                            for j in jobs:
+                                if j.jobid == jobid:
+                                    tmp_job = j
+                                    gpu_index = i
+                                    flag = True
+                                    break 
+                        jobs.remove(tmp_job)
+
+                        if flag:
+                            self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)
+                            self.sorted(gpu_index)
+                            self.termination(gpu_index)
+                            self.creation(gpu_index)
+                            JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                                type ='finish', JobID = jobid
+                            ))
+                            return 0
+
             
             if p.returncode == 143  or -15:
                 JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
@@ -815,6 +842,7 @@ class GPU_monitor:
 def WorkerService():
     regist_worker()
     node = woker()
+    node.cluster_algorithm = 'me'
     node.start_update_load()
     restart_thread = threading.Thread(target=restart_dcgm)
     restart_thread.start()
