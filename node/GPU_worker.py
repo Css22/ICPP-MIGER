@@ -598,6 +598,7 @@ class woker:
                 if online_job_item not in self.fix_job[gpu_id]:
                     GI_ID = online_job_item.gi_id
                     config = self.config_list[gpu_id][i]
+           
                     ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
 
                     update_uuid(gpu_id, ID, type)
@@ -606,8 +607,7 @@ class woker:
                     for j in UUID_table[gpu_id].keys():
                         if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
-                            break
-                    
+                            break 
                     
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
 
@@ -626,6 +626,44 @@ class woker:
 
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+    
+    def migrate_creation(self, gpu_id, new_gi_id, config,  online_job_item: online_job, offline_job_item=None):
+        type = 'create'
+
+        if offline_job_item == None:
+            GI_ID = new_gi_id
+            ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+            update_uuid(gpu_id, ID, type)
+            start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
+
+            UUID = 0
+            for j in UUID_table[gpu_id].keys():
+                if int(UUID_table[gpu_id][j]) == int(ID):
+                    UUID = j
+                    break
+                
+            MPS_operator.OpenMPS(UUID=UUID)
+            self.executor(online_job_item, UUID=UUID)
+
+        else:
+            GI_ID = new_gi_id
+            ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+            update_uuid(gpu_id, ID, type)
+            start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
+
+            UUID = 0
+            for j in UUID_table[gpu_id].keys():
+                if int(UUID_table[gpu_id][j]) == int(ID):
+                    UUID = j
+                    break
+
+            SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
+            MPS_operator.OpenMPS(UUID=UUID)
+            self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
+            time.sleep(5)
+            self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+
+
 
 
 
@@ -652,7 +690,16 @@ class woker:
                 str(epoch)
             ]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+
+            tmp_id = 0
+            if jobid in self.jobs_pid.keys():
+                if check_process_running(self.jobs_pid[jobid]):
+                    tmp_id = self.jobs_pid[jobid]
+
             self.jobs_pid[jobid] = int(p.pid)
+            print(tmp_id)
+            os.kill(tmp_id, signal.SIGTERM)
+
             p.wait()
 
 
@@ -669,6 +716,7 @@ class woker:
                 str(jobid)
             ]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+
             self.jobs_pid[jobid] = int(p.pid)
             p.wait()
 
@@ -806,6 +854,9 @@ class woker:
 
         self.config_list[gpu_id] = sorted_list1
         self.GPU_list[gpu_id] = sorted_list2
+
+
+
 
 
 

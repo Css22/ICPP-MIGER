@@ -1,5 +1,6 @@
 import glob
 import json
+import psutil
 class job:
     def __init__(self, model_name, config, batch_Size, average_time, tail, jobid=0):
         self.model_name = model_name
@@ -695,3 +696,11 @@ def get_throughput_double_list():
     f.close()
     
     return throught_list
+
+
+def check_process_running(pid):
+    if psutil.pid_exists(pid):
+        process = psutil.Process(pid)
+        if process.is_running():
+            return True
+    return False
