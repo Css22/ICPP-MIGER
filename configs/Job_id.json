@@ -1,8 +1,6 @@
 {
-    "0": "online_bert_32_200",
-    "1": "online_bert_32_200",
-    "2": "offline_resnet50_1",
-    "3": "offline_resnet50_1",
-    "4": "offline_resnet50_1",
-    "5": "offline_resnet50_1"
+    "0": "online_resnet50_32_45",
+    "1": "offline_GAN_5",
+    "2": "offline_GAN_10",
+    "3": "offline_resnet50_5"
 }

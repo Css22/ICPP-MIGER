@@ -101,28 +101,28 @@ def start_cluster():
 
 
 
-    jobs1  = [] 
-    test_job1 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=0)
-    test_job2 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=1)
-    test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=2)
-    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=3)
-    test_job5 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=4)
-    test_job6 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=5)
+    # jobs1  = [] 
+    # test_job1 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=0)
+    # test_job2 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=1)
+    # test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=2)
+    # test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=3)
+    # test_job5 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=4)
+    # test_job6 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=5)
    
 
-    # jobs1.append(jobs[0])
+    # # jobs1.append(jobs[0])
 
-    # jobs1.append(jobs[1])
-    # jobs1.append(jobs[2])
+    # # jobs1.append(jobs[1])
+    # # jobs1.append(jobs[2])
 
-    jobs1.append(test_job1)
-    jobs1.append(test_job2)
-    jobs1.append(test_job3)
-    jobs1.append(test_job4)
-    jobs1.append(test_job5)
-    jobs1.append(test_job6)
-    # generate_jobid(jobs1)
-    jobs = jobs1
+    # jobs1.append(test_job1)
+    # jobs1.append(test_job2)
+    # jobs1.append(test_job3)
+    # jobs1.append(test_job4)
+    # jobs1.append(test_job5)
+    # jobs1.append(test_job6)
+    # # generate_jobid(jobs1)
+    # jobs = jobs1
     time.sleep(10)
     for i in jobs:
         if not schedule(i.jobid):

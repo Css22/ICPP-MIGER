@@ -78,14 +78,21 @@ for i in offline_jobs:
 
 
 def test_main():
+    node1 = woker()
+    node1.cluster_algorithm = 'me'
     jobs1  = [] 
-    test_job1 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=0)
-    test_job2 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=1)
-    test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=2)
-    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=3)
-    test_job5 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=4)
-    test_job6 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=5)
+    test_job1 = online_job(model_name='resnet50', batch_Size=32, qos=45)
+    test_job2 = offline_job(model_name='GAN', batch_Size=32, epoch=5)
+    test_job3 = offline_job(model_name='GAN', batch_Size=32, epoch=10)
+    test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=5)
+    # test_job2 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=1)
+    # test_job3 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=2)
+    # test_job4 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=3)
+    # test_job5 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=4)
+    # test_job6 = offline_job(model_name='resnet50', batch_Size=32, epoch=1, jobid=5)
    
+
+
 
     # jobs1.append(jobs[0])
 
@@ -96,11 +103,17 @@ def test_main():
     jobs1.append(test_job2)
     jobs1.append(test_job3)
     jobs1.append(test_job4)
-    jobs1.append(test_job5)
-    jobs1.append(test_job6)
+    for i in range(0, len(jobs1)):
+        jobs1[i].jobid = i
+
+    print(node1.partition_optimizer(jobs=jobs1, GPU_index=0))
+    print(node1.GPU_list)
+    print(node1.config_list)
+    # jobs1.append(test_job4)
+    # jobs1.append(test_job5)
+    # jobs1.append(test_job6)
     generate_jobid(jobs1)
-    # node1 = woker()
-    # node1.cluster_algorithm = 'me'
+
 
 
     # jobs1  = [] 
@@ -133,8 +146,8 @@ def test_main():
     # node1.node_schedule(test_job2, gpu_id=0)
     # for i in jobs1:
     #     print(i)
-    GPU_worker.regist_worker()
-    GPU_worker.WorkerService()
+    # GPU_worker.regist_worker()
+    # GPU_worker.WorkerService()
 
     # print(node1.partition_optimizer(jobs1, GPU_index=0))
     # print(node1.GPU_list)
