@@ -1,13 +1,14 @@
 import Test.TestForExecutor as TestForExecutor
 import Test.TestForMigration as TestForMigration
+import Test.TestForTree as TestForTree
 import util.MIG_operator as MIG_operator
 import util.MPS_operator as MPS_operator
 UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 
 
 # TestForExecutor.test_main()
-TestForMigration.test_function_migrate_creation()
-
+# TestForMigration.test_function_migrate_creation()
+TestForTree.TestForTree()
 # print(MPS_operator.GetPercentage(UUID))
 # MPS_operator.SetPercentage(UUID=UUID, Percentage=30)
 # MPS_operator.SetPercentage(30)

@@ -627,7 +627,42 @@ class woker:
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
                     offline_job_item.gi_id = ID
-    def migrate_order(self):
+    
+
+    def migrate_order(self, gpu_id):
+        num = 0
+        for i in range(0, len(self.GPU_list[gpu_id])):
+                if len(self.GPU_list[gpu_id][i]) == 1:
+                    if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                        num = num + 1
+                if len(self.GPU_list[gpu_id][i]) == 2:
+                    num = num + 1
+
+        GI_ID_list = []
+        visit_list = []
+        order_list = []
+        for i in range(0, len(self.GPU_list[gpu_id])):
+            if len(self.GPU_list[gpu_id][i]) == 1:
+                if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                    if self.GPU_list[gpu_id][i][0].gi_id != -1:
+                        GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].gi_id))
+
+            if len(self.GPU_list[gpu_id][i]) == 2: 
+                if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                    if self.GPU_list[gpu_id][i][0].gi_id != -1:
+                        GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].gi_id))
+                else:
+                    if self.GPU_list[gpu_id][i][1].gi_id != -1:
+                        GI_ID_list.append(int(self.GPU_list[gpu_id][i][1].gi_id))
+                        
+        while True:
+            flag = False
+            
+            
+            if not flag:
+                return False
+
+    def do_migrate():
         pass
     
     def migrate_creation(self, gpu_id, new_gi_id, config,  online_job_item: online_job, offline_job_item=None):
@@ -665,7 +700,7 @@ class woker:
                 if int(UUID_table[gpu_id][j]) == int(original_ID):
                     UUID = j
                     break
-                
+
             MPS_operator.CloseMPS(UUID=UUID)
             stop_monitor(gpu_id=gpu_id, GI_ID=original_ID)
             MIG_operator.destroy_ins(gpu=gpu_id, ID=original_ID)

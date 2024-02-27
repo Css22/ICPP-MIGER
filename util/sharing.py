@@ -15,6 +15,7 @@ class job:
 
 class online_job:
     def __init__(self, model_name, batch_Size, qos, jobid=0):
+        self.new_gi_id =-1
         self.gi_id = -1 
         self.model_name = model_name
         self.batch_Size = batch_Size
@@ -26,6 +27,7 @@ class online_job:
 
 class offline_job: 
     def __init__(self, model_name, batch_Size, epoch, jobid=0):
+        self.new_gi_id =-1
         self.gi_id = -1
         self.model_name = model_name
         self.batch_Size = batch_Size
@@ -195,7 +197,9 @@ class TreeNode:
         if self.father != None:
             self.father.flag = True
             self.father.change_father()
-      
+
+
+
 
 
 
@@ -342,7 +346,22 @@ def check_volid(config, online_jobs, online_config):
     clean_tree()
     return True
 
-
+def check_available(gi_id, used_list):
+    for i in used_list:
+        node = TreeNode_map.get(i)
+        node.flag = True
+        node.change_father()
+        node.traverse_children()
+        
+        node = TreeNode_map.get(gi_id)
+    if node.flag == True:
+        clean_tree()
+        return False
+        
+    else:   
+        clean_tree()
+        return True
+    
 def set_gi_id(jobs, config):
     config_reserve = []
     for i in config:
