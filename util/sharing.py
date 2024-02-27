@@ -352,8 +352,8 @@ def check_available(gi_id, used_list):
         node.flag = True
         node.change_father()
         node.traverse_children()
-        
-        node = TreeNode_map.get(gi_id)
+    
+    node = TreeNode_map.get(int(gi_id))
     if node.flag == True:
         clean_tree()
         return False

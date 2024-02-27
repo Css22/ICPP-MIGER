@@ -657,10 +657,83 @@ class woker:
                         
         while True:
             flag = False
-            
+            for i in range(0, len(self.GPU_list[gpu_id])):
+                if i in visit_list:
+                    continue
+                if len(self.GPU_list[gpu_id][i]) == 1:
+                    if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                        if self.GPU_list[gpu_id][i][0].gi_id != -1:
+                            if self.GPU_list[gpu_id][i][0].gi_id == self.GPU_list[gpu_id][i][0].new_gi_id:
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                            else:
+                                if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
+                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][0].gi_id)
+                                    GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                    num = num - 1
+                                    visit_list.append(i)
+                                    flag = True 
+                                    order_list.append(i)
+                        else:
+                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
+                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                                order_list.append(i)
+
+                if len(self.GPU_list[gpu_id][i]) == 2: 
+                    if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                        if self.GPU_list[gpu_id][i][0].gi_id != -1:
+                            if self.GPU_list[gpu_id][i][0].gi_id == self.GPU_list[gpu_id][i][0].new_gi_id:
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                            else:
+                                if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
+                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][0].gi_id)
+                                    GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                    num = num - 1
+                                    visit_list.append(i)
+                                    flag = True 
+                                    order_list.append(i)
+                        
+                        else:
+                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
+                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                                order_list.append(i)
+                    else:
+                        if self.GPU_list[gpu_id][i][1].gi_id != -1:
+                            if self.GPU_list[gpu_id][i][1].gi_id == self.GPU_list[gpu_id][i][1].new_gi_id:
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                            else:
+                                if check_available(gi_id= self.GPU_list[gpu_id][i][1].new_gi_id, used_list=GI_ID_list):
+                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][1].gi_id)
+                                    GI_ID_list.append(self.GPU_list[gpu_id][i][1].new_gi_id)
+                                    num = num - 1
+                                    visit_list.append(i)
+                                    flag = True 
+                                    order_list.append(i)
+                        else:
+                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
+                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                num = num - 1
+                                visit_list.append(i)
+                                flag = True 
+                                order_list.append(i)
+            if num == 0:
+                return order_list
             
             if not flag:
                 return False
+            
+           
 
     def do_migrate():
         pass

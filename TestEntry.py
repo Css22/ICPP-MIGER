@@ -8,7 +8,9 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 
 # TestForExecutor.test_main()
 # TestForMigration.test_function_migrate_creation()
-TestForTree.TestForTree()
+# TestForTree.TestForTree()
+
+TestForMigration.test_function_migrate_order()
 # print(MPS_operator.GetPercentage(UUID))
 # MPS_operator.SetPercentage(UUID=UUID, Percentage=30)
 # MPS_operator.SetPercentage(30)

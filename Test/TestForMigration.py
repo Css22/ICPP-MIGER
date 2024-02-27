@@ -41,3 +41,23 @@ def test_function_migrate_creation():
     # print(node1.partition_optimizer(jobs=jobs1, GPU_index=0))
     # print(node1.GPU_list)
     # print(node1.config_list)
+
+
+def test_function_migrate_order():
+    node1 = woker()
+    node1.cluster_algorithm = 'me'
+
+    test_job1 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+    test_job2 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+    test_job3 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+
+    test_job1.gi_id = 2
+    test_job1.new_gi_id = 2
+
+    test_job2.gi_id = 7
+    test_job2.new_gi_id = 13
+
+    test_job3.new_gi_id = 1
+    test_job3.gi_id = -1
+    node1.GPU_list = [[[test_job1], [test_job2], [test_job3]] ]
+    print(node1.migrate_order(0))
