@@ -97,9 +97,9 @@ def schedule(jobid):
         return False
 
 def start_cluster():
-    jobs = generate_jobs()
+    # jobs = generate_jobs()
 
-
+    pass
 
     # jobs1  = [] 
     # test_job1 = online_job(model_name='bert', batch_Size=32, qos=200, jobid=0)
@@ -123,12 +123,12 @@ def start_cluster():
     # jobs1.append(test_job6)
     # # generate_jobid(jobs1)
     # jobs = jobs1
-    time.sleep(10)
-    for i in jobs:
-        if not schedule(i.jobid):
-            job_queue.put(i.jobid)
+    # time.sleep(10)
+    # for i in jobs:
+    #     if not schedule(i.jobid):
+    #         job_queue.put(i.jobid)
     
-        time.sleep(20)
+    #     time.sleep(20)
 
     
 

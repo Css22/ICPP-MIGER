@@ -13,6 +13,7 @@ from Unet import unet
 from vgg_splited import vgg16, vgg19
 from resnet import resnet50,resnet101,resnet152
 from inception_ve import inception_v3
+import signal
 
 flag_path = "/data/zbw/MIG/MIG/MIG_Schedule/flag"
 model_list = {
@@ -155,6 +156,8 @@ def Test_MIG(task, batch):
     data = pd.Series(result_list)
     return data.quantile(.95)
 
+def signal_handler(sig, frame):
+    pass
 
 if __name__ == "__main__":
     path = '/data/zbw/MIG/MIG/ATC-MIG/tmp_result.txt'
@@ -164,6 +167,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     task = args.task
     batch = args.batch
+    signal.signal(signal.SIGTERM, signal_handler)
     if task == 'bert':  
         model = get_model(task)
         model = model().half().cuda(0).eval()

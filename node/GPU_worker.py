@@ -565,7 +565,7 @@ class woker:
                                 UUID = j
                                 break
                         self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
-
+                        self.GPU_list[gpu_id][i][0].gi_id = ID
                     else:
 
                         GI_ID = self.GPU_list[gpu_id][i][0].gi_id
@@ -626,6 +626,9 @@ class woker:
 
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+                    offline_job_item.gi_id = ID
+    def migrate_order(self):
+        pass
     
     def migrate_creation(self, gpu_id, new_gi_id, config,  online_job_item: online_job, offline_job_item=None):
         type = 'create'
@@ -643,7 +646,30 @@ class woker:
                     break
                 
             MPS_operator.OpenMPS(UUID=UUID)
+            original_pid =  self.jobs_pid[online_job_item.jobid]
+            original_ID = online_job_item.gi_id
+
+
             self.executor(online_job_item, UUID=UUID)
+            
+
+            try:
+                os.kill(original_pid, signal.SIGKILL)
+            except Exception as e:
+                print('pid missing')
+
+            time.sleep(3)
+
+            UUID = 0
+            for j in UUID_table[gpu_id].keys():
+                if int(UUID_table[gpu_id][j]) == int(original_ID):
+                    UUID = j
+                    break
+                
+            MPS_operator.CloseMPS(UUID=UUID)
+            stop_monitor(gpu_id=gpu_id, GI_ID=original_ID)
+            MIG_operator.destroy_ins(gpu=gpu_id, ID=original_ID)
+            update_uuid(gpu_id=gpu_id, GI_ID=original_ID, type='destroy')
 
         else:
             GI_ID = new_gi_id
@@ -656,17 +682,37 @@ class woker:
                 if int(UUID_table[gpu_id][j]) == int(ID):
                     UUID = j
                     break
+            
+            offline_job_item_original_pid =  self.jobs_pid[offline_job_item.jobid]
+            online_job_item_original_pid = self.jobs_pid[online_job_item.jobid]
+            original_ID = online_job_item.gi_id
 
             SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
             MPS_operator.OpenMPS(UUID=UUID)
             self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
             time.sleep(5)
+
+            try:
+                os.kill(offline_job_item_original_pid, signal.SIGTERM)
+                os.kill(online_job_item_original_pid, signal.SIGKILL)
+            except Exception as e:
+                print('pid missing')
+            time.sleep(3)
+
+           
+
             self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
 
+            UUID = 0
+            for j in UUID_table[gpu_id].keys():
+                if int(UUID_table[gpu_id][j]) == int(original_ID):
+                    UUID = j
+                    break
 
-
-
-
+            MPS_operator.CloseMPS(UUID=UUID)
+            stop_monitor(gpu_id=gpu_id, GI_ID=original_ID)
+            MIG_operator.destroy_ins(gpu=gpu_id, ID=original_ID)
+            update_uuid(gpu_id=gpu_id, GI_ID=original_ID, type='destroy')
 
     
     def run_process(self, UUID, path, model_name, type, epoch, jobid):
@@ -680,6 +726,7 @@ class woker:
 
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = UUID
+        
         if type == "--batch":
             cmd = [
                 "python",
@@ -695,10 +742,10 @@ class woker:
             if jobid in self.jobs_pid.keys():
                 if check_process_running(self.jobs_pid[jobid]):
                     tmp_id = self.jobs_pid[jobid]
-
+            
             self.jobs_pid[jobid] = int(p.pid)
-            print(tmp_id)
-            os.kill(tmp_id, signal.SIGTERM)
+            if tmp_id != 0 :
+                os.kill(tmp_id, signal.SIGTERM)
 
             p.wait()
 
@@ -831,7 +878,6 @@ class woker:
         else:
             if isinstance(job, online_job):
                 MPS_operator.SetPercentage(UUID=UUID, Percentage=MPS_percentage)
-                print(MPS_operator.GetPercentage(UUID=UUID))
                 thread = threading.Thread(target=self.run_process, args=(UUID, online_path, job.model_name, '--batch' ,job.batch_Size ,job.jobid))
 
             if isinstance(job, offline_job):
@@ -908,7 +954,7 @@ def start_GPU_monitor(gpu_id, GI_ID):
     monitor = GPU_monitor()
     monitor_thread = threading.Thread(target=monitor.start_GPU_monitor, args=(gpu_id, GI_ID))
     monitor_thread.start()
-    monitor_table[gpu_id][GI_ID] = monitor
+    monitor_table[gpu_id][int(GI_ID)] = monitor
 
 def update_uuid(gpu_id, GI_ID, type):
     if type == 'destroy':
@@ -928,7 +974,7 @@ def stop_monitor(gpu_id, GI_ID):
     monitor = monitor_table[gpu_id][GI_ID] 
     monitor.stop()
     time.sleep(1)
-    del monitor_table[gpu_id][GI_ID]
+    del monitor_table[gpu_id][int(GI_ID)]
 
 def regist_worker():
     global ip, port, node
