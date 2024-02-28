@@ -557,7 +557,7 @@ class woker:
                         ID = MIG_operator.create_ins(gpu_id, config)
                         self.GPU_list[gpu_id][i][0].gi_id = ID
                         update_uuid(gpu_id, ID, type)
-                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
+                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=int(ID))
                         UUID = 0
                         for j in UUID_table[gpu_id].keys():
                             if int(UUID_table[gpu_id][j]) == int(ID):
@@ -572,7 +572,7 @@ class woker:
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
                        
                         update_uuid(gpu_id, ID, type)
-                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
+                        start_GPU_monitor(gpu_id=gpu_id, GI_ID=int(ID))
                         UUID = 0
                         for j in UUID_table[gpu_id].keys():
                             if int(UUID_table[gpu_id][j]) == int(ID):
@@ -601,13 +601,13 @@ class woker:
            
                     ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
                     update_uuid(gpu_id, ID, type)
-                    start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
+                    start_GPU_monitor(gpu_id=gpu_id, GI_ID=int(ID))
                     UUID = 0
                     for j in UUID_table[gpu_id].keys():
                         if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
                             break 
-                    
+                  
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
 
                     MPS_operator.OpenMPS(UUID=UUID)
@@ -616,14 +616,16 @@ class woker:
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
                 else:
                     ID = online_job_item.gi_id
+                   
                     config = self.config_list[gpu_id][i]
                     UUID = 0
                     for j in UUID_table[gpu_id].keys():
                         if int(UUID_table[gpu_id][j]) == int(ID):
                             UUID = j
                             break
-
+                
                     SM1, SM2 = find_optimal_SM(online_job_item, offline_job_item, config)
+             
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
                     offline_job_item.gi_id = ID
     
@@ -1086,7 +1088,7 @@ def update_uuid(gpu_id, GI_ID, type):
 
 
 def stop_monitor(gpu_id, GI_ID):
-    monitor = monitor_table[gpu_id][GI_ID] 
+    monitor = monitor_table[gpu_id][int(GI_ID)] 
     monitor.stop()
     time.sleep(1)
     del monitor_table[gpu_id][int(GI_ID)]
@@ -1132,12 +1134,12 @@ def find_optimal_SM(online_job: online_job, offline_job: offline_job, config):
         if i.model_name == offline_job.model_name  and i.config == '1c-7g-80gb' and i.batch_Size == None:
             base = float(i.average_time)
             break
-        
     SM1 = 0
     SM2 = 0
     throught = 0 
     for i in throught_list[config]:
         if i[2] == online_job.model_name and int(i[3]) == int(online_job.batch_Size) and i[0] == offline_job.model_name:
+
             if is_float(i[5]) and is_float(i[6]):
                 if float(i[6]) <= float(online_job.qos):
                     flag = True

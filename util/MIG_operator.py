@@ -61,7 +61,6 @@ def create_ins_with_ID(gpu, ins, req_ID):
     tem_ID_list = []
     while True:
         ID = create_ins(gpu, ins)
-        print(ID, req_ID)
         if int(ID) == int(req_ID):
             for i in tem_ID_list:
                 destroy_ins(gpu, i)
