@@ -555,7 +555,6 @@ class woker:
                     if isinstance(self.GPU_list[gpu_id][i][0], offline_job):
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins(gpu_id, config)
-
                         self.GPU_list[gpu_id][i][0].gi_id = ID
                         update_uuid(gpu_id, ID, type)
                         start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
@@ -571,6 +570,7 @@ class woker:
                         GI_ID = self.GPU_list[gpu_id][i][0].gi_id
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+                       
                         update_uuid(gpu_id, ID, type)
                         start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                         UUID = 0
@@ -600,7 +600,6 @@ class woker:
                     config = self.config_list[gpu_id][i]
            
                     ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
-
                     update_uuid(gpu_id, ID, type)
                     start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
                     UUID = 0
@@ -635,6 +634,7 @@ class woker:
                 if len(self.GPU_list[gpu_id][i]) == 1:
                     if isinstance(self.GPU_list[gpu_id][i][0], online_job):
                         num = num + 1
+
                 if len(self.GPU_list[gpu_id][i]) == 2:
                     num = num + 1
 
@@ -681,7 +681,6 @@ class woker:
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
-                                order_list.append(i)
 
                 if len(self.GPU_list[gpu_id][i]) == 2: 
                     if isinstance(self.GPU_list[gpu_id][i][0], online_job):
@@ -705,7 +704,6 @@ class woker:
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
-                                order_list.append(i)
                     else:
                         if self.GPU_list[gpu_id][i][1].gi_id != -1:
                             if self.GPU_list[gpu_id][i][1].gi_id == self.GPU_list[gpu_id][i][1].new_gi_id:
@@ -721,12 +719,11 @@ class woker:
                                     flag = True 
                                     order_list.append(i)
                         else:
-                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
-                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                            if check_available(gi_id= self.GPU_list[gpu_id][i][1].new_gi_id, used_list=GI_ID_list):
+                                GI_ID_list.append(self.GPU_list[gpu_id][i][1].new_gi_id)
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
-                                order_list.append(i)
             if num == 0:
                 return order_list
             
@@ -735,15 +732,24 @@ class woker:
             
            
 
-    def do_migrate():
-        pass
+    def do_migrate(self, gpu_id, order_list):
+        for i in order_list:
+            if len(self.GPU_list[gpu_id][i]) == 1:
+                if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                    self.migrate_creation(gpu_id=gpu_id, new_gi_id=self.GPU_list[gpu_id][i][0].new_gi_id, config=self.config_list[gpu_id][i], online_job_item=self.GPU_list[gpu_id][i][0])
+            if len(self.GPU_list[gpu_id][i]) == 2:
+                if isinstance(self.GPU_list[gpu_id][i][0], online_job):
+                    self.migrate_creation(gpu_id=gpu_id, new_gi_id=self.GPU_list[gpu_id][i][0].new_gi_id, config=self.config_list[gpu_id][i], online_job_item=self.GPU_list[gpu_id][i][0], offline_job_item=self.GPU_list[gpu_id][i][1])
+                else:
+                    self.migrate_creation(gpu_id=gpu_id, new_gi_id=self.GPU_list[gpu_id][i][1].new_gi_id, config=self.config_list[gpu_id][i], online_job_item=self.GPU_list[gpu_id][i][1], offline_job_item=self.GPU_list[gpu_id][i][0])
+        
     
     def migrate_creation(self, gpu_id, new_gi_id, config,  online_job_item: online_job, offline_job_item=None):
         type = 'create'
-
         if offline_job_item == None:
             GI_ID = new_gi_id
             ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+            time.sleep(1)
             update_uuid(gpu_id, ID, type)
             start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
 
@@ -761,7 +767,7 @@ class woker:
             self.executor(online_job_item, UUID=UUID)
             
 
-            try:
+            try:           
                 os.kill(original_pid, signal.SIGKILL)
             except Exception as e:
                 print('pid missing')
@@ -782,6 +788,7 @@ class woker:
         else:
             GI_ID = new_gi_id
             ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
+            time.sleep(1)
             update_uuid(gpu_id, ID, type)
             start_GPU_monitor(gpu_id=gpu_id, GI_ID=ID)
 
@@ -801,7 +808,7 @@ class woker:
             time.sleep(5)
 
             try:
-                os.kill(offline_job_item_original_pid, signal.SIGTERM)
+                # os.kill(offline_job_item_original_pid, signal.SIGTERM)
                 os.kill(online_job_item_original_pid, signal.SIGKILL)
             except Exception as e:
                 print('pid missing')
@@ -809,7 +816,7 @@ class woker:
 
            
 
-            self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+            # self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
 
             UUID = 0
             for j in UUID_table[gpu_id].keys():
