@@ -177,3 +177,59 @@ def test_function_do_migrate():
     node1.creation(0)        
     print(node1.fix_job)    
                          
+
+def test_function_do_migrate_bug():
+
+    node1 = woker()
+    node1.cluster_algorithm = 'me'
+
+    test_job1 = offline_job(model_name='GAN', batch_Size=32, epoch=5, jobid=0)
+    test_job2 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+    test_job3 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+    test_job4 = online_job(model_name='resnet50', batch_Size=32, qos=45, jobid=0)
+
+    test_job1.jobid = 0
+    test_job2.jobid = 1
+    test_job3.jobid = 2
+    test_job4.jobid = 3
+
+
+    test_job1.gi_id = 11
+    test_job1.new_gi_id = 12
+
+    test_job2.gi_id = -1
+    test_job2.new_gi_id = 11
+
+    # test_job3.gi_id = -1
+    # test_job3.new_gi_id = 1
+
+    # test_job4.gi_id = 8
+    # test_job4.new_gi_id = 12
+
+    node1.GPU_list = [[[test_job1]]]
+    node1.config_list = [['1c-1g-10gb']]
+
+    # order_list = node1.migrate_order(0)
+    # print(order_list)
+    node1.creation(0) 
+    # node1.fix_job[0].append(test_job2)
+    time.sleep(60)
+
+    node1.GPU_list = [[[test_job1], [test_job2]] ]
+    node1.config_list = [['1c-1g-10gb', '1c-1g-10gb']]
+
+
+    node1.termination(0)
+    test_job1.gi_id = test_job1.new_gi_id
+    test_job2.gi_id = test_job2.new_gi_id
+    node1.creation(0)
+    # node1.sorted(0)
+    # order_list = node1.migrate_order(0)
+    # print(order_list)
+    # if order_list:
+    #     node1.do_migrate(gpu_id=0, order_list=order_list)   
+    # test_job1 = 
+    #     test_job3.gi_id = 1
+    #     node1.creation(0)        
+    #     print(node1.fix_job)  
+    # pass

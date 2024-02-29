@@ -11,7 +11,8 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 # TestForTree.TestForTree()
 
 # TestForMigration.test_function_migrate_order()
-TestForMigration.test_function_do_migrate()
+# TestForMigration.test_function_do_migrate()
+TestForMigration.test_function_do_migrate_bug()
 
 
 

@@ -139,16 +139,27 @@ class woker:
                         else:
                             self.throughput[gpu_id] = throught_put
                             self.sorted(gpu_id)
+                            order_list = self.migrate_order(gpu_id)
                             self.termination(gpu_id)
+
+                            if order_list:
+                                self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                             self.creation(gpu_id)
 
                     else:
                         throught_put = self.partition_optimizer(jobs, gpu_id)
                         self.throughput[gpu_id] = throught_put
-                    
+
                         self.sorted(gpu_id)
+                        order_list = self.migrate_order(gpu_id)
                         self.termination(gpu_id)
+                            
+                        if order_list:
+                            self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                         self.creation(gpu_id)
+                        # self.sorted(gpu_id)
+                        # self.termination(gpu_id)
+                        # self.creation(gpu_id)
                         self.fix_job[gpu_id].append(new_job)
 
                     time.sleep(20)
@@ -554,8 +565,7 @@ class woker:
                 if self.GPU_list[gpu_id][i][0] not in self.fix_job[gpu_id]:
                     if isinstance(self.GPU_list[gpu_id][i][0], offline_job):
                         config = self.config_list[gpu_id][i]
-                        ID = MIG_operator.create_ins(gpu_id, config)
-                        self.GPU_list[gpu_id][i][0].gi_id = ID
+                        ID = MIG_operator.create_ins_with_ID(gpu_id, config, self.GPU_list[gpu_id][i][0].new_gi_id)
                         update_uuid(gpu_id, ID, type)
                         start_GPU_monitor(gpu_id=gpu_id, GI_ID=int(ID))
                         UUID = 0
@@ -567,7 +577,7 @@ class woker:
                         self.GPU_list[gpu_id][i][0].gi_id = ID
                     else:
 
-                        GI_ID = self.GPU_list[gpu_id][i][0].gi_id
+                        GI_ID = self.GPU_list[gpu_id][i][0].new_gi_id
                         config = self.config_list[gpu_id][i]
                         ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
                        
@@ -582,6 +592,7 @@ class woker:
                         
                         MPS_operator.OpenMPS(UUID=UUID)
                         self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
+                        self.GPU_list[gpu_id][i][0].gi_id = ID
                 else:
                     continue
             else:
@@ -596,7 +607,7 @@ class woker:
                     offline_job_item = self.GPU_list[gpu_id][i][0]
 
                 if online_job_item not in self.fix_job[gpu_id]:
-                    GI_ID = online_job_item.gi_id
+                    GI_ID = online_job_item.new_gi_id
                     config = self.config_list[gpu_id][i]
            
                     ID = MIG_operator.create_ins_with_ID(gpu_id, config, GI_ID)
@@ -612,8 +623,10 @@ class woker:
 
                     MPS_operator.OpenMPS(UUID=UUID)
                     self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
+                    online_job_item.gi_id = ID
                     time.sleep(5)
                     self.executor(job=offline_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM2)
+                    offline_job_item.gi_id = ID
                 else:
                     ID = online_job_item.gi_id
                    
@@ -767,6 +780,7 @@ class woker:
 
 
             self.executor(online_job_item, UUID=UUID)
+            online_job_item.gi_id = ID
             
 
             try:           
@@ -800,7 +814,7 @@ class woker:
                     UUID = j
                     break
             
-            offline_job_item_original_pid =  self.jobs_pid[offline_job_item.jobid]
+            # offline_job_item_original_pid =  self.jobs_pid[offline_job_item.jobid]
             online_job_item_original_pid = self.jobs_pid[online_job_item.jobid]
             original_ID = online_job_item.gi_id
 
@@ -808,7 +822,7 @@ class woker:
             MPS_operator.OpenMPS(UUID=UUID)
             self.executor(job=online_job_item, UUID=UUID, MPS_flag=True, MPS_percentage=SM1)
             time.sleep(5)
-
+            online_job_item.gi_id = ID
             try:
                 # os.kill(offline_job_item_original_pid, signal.SIGTERM)
                 os.kill(online_job_item_original_pid, signal.SIGKILL)
