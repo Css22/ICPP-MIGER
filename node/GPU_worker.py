@@ -311,10 +311,15 @@ class woker:
             return False
         
         valid = []
+        migrate_flag = []
         for i in valid_config:
             if check_volid(i.copy(), online_jobs, online_config):
                 valid.append(i)
-
+                migrate_flag.append(False)
+            else:
+                self.allocate_avaliable(online_jobs, online_config)
+                valid.append(i)
+                migrate_flag.append(True)
 
         valid_config = valid
 
@@ -340,6 +345,7 @@ class woker:
         best_obj = 0
         best_config = {}
         best_concurrency  = {}
+        best_config_migrate = None
 
         for i in valid_config:
             
@@ -392,6 +398,8 @@ class woker:
                                     best_config = tmp_config
                                     best_obj = throught + tmp_throught
                                     best_concurrency = concurrency
+                                    best_config_available = migrate_flag[valid_config.index(i)]
+
                             else:
                                 continue
                 else:
@@ -416,6 +424,7 @@ class woker:
                             best_config = config
                             best_obj = throught
                             best_concurrency = concurrency
+                            best_config_available = migrate_flag[valid_config.index(i)]
 
         if best_obj == 0 :
             return False
@@ -436,8 +445,12 @@ class woker:
            
             self.GPU_list[GPU_index].append([i])
             self.config_list[GPU_index].append(best_config.get(i))
-
-        set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
+        
+        if not best_config_migrate:
+            set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
+        else:
+            self.allocate_gi_id(online_jobs, online_config)
+            set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         
         return best_obj
 
@@ -988,10 +1001,16 @@ class woker:
                     ))
   
 
+    def allocate_gi_id(self, online_jobs, online_config):
+        exist_list = []
+
+        for i in online_jobs:
+            if i.gi_id != -1:
+                exist_list.append(i.gi_id)
     
-       
 
-
+    def allocate_avaliable(self, online_jobs, online_config):
+        pass
 
 
     def executor(self, job, UUID,MPS_flag = False, MPS_percentage=None):
