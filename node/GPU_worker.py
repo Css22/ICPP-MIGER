@@ -345,6 +345,8 @@ class woker:
                 self.GPU_list[GPU_index].append([online_jobs[i]])
                 self.config_list[GPU_index].append(config_list[i])
 
+            for i in online_jobs:
+                i.new_gi_id = i.gi_id
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
             return 0.0000001
 
@@ -427,6 +429,7 @@ class woker:
                             tmp_dic[tmp[k]] = config[k]
 
                         config = tmp_dic
+
                         if throught > best_obj:
                             best_config = config
                             best_obj = throught
@@ -457,8 +460,10 @@ class woker:
         
 
 
-
+        print(best_config_migrate)
         if not best_config_migrate:
+            for i in online_jobs:
+                i.new_gi_id = i.gi_id
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         else:
             self.allocate_avaliable(online_jobs, online_config, choose_config)

@@ -363,6 +363,7 @@ def check_available(gi_id, used_list):
         return True
     
 def set_gi_id(jobs, config):
+ 
     config_reserve = []
     for i in config:
         config_reserve.append(config_map.get(i))
@@ -377,8 +378,9 @@ def set_gi_id(jobs, config):
     for i in range(0, len(jobs_reverse)):
         if len(jobs_reverse[i]) == 1:
             if isinstance(jobs_reverse[i][0], online_job):
-                if jobs_reverse[i][0].gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][0].gi_id)
+                if jobs_reverse[i][0].new_gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][0].new_gi_id)
+                    print(node.value)
                     node.flag = True
                     node.change_father()
                     node.traverse_children()
@@ -386,30 +388,31 @@ def set_gi_id(jobs, config):
         
         else:
             if isinstance(jobs_reverse[i][0], online_job):
-                if jobs_reverse[i][0].gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][0].gi_id)
+                if jobs_reverse[i][0].new_gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][0].new_gi_id)
                     node.flag = True
                     node.change_father()
                     node.traverse_children()
                     index_list.append(i)
 
             elif isinstance(jobs_reverse[i][1], online_job):
-                if jobs_reverse[i][1].gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][1].gi_id)
+                if jobs_reverse[i][1].new_gi_id != -1:
+                    node  = TreeNode_map.get(jobs_reverse[i][1].new_gi_id)
                     node.flag = True
                     node.change_father()
                     node.traverse_children()
                     index_list.append(i)
-
+  
     for i in range(0, len(jobs_reverse)):
         config = reversed_config_map.get(config_reverse[i])
         if i in index_list:
             continue
-
+        
         new_gi_id = -1
         choice_list_copy = config_choice_list.get(config).copy()
 
         for j in choice_list_copy:
+
             node = TreeNode_map.get(j)
             if node.flag == False:
                 node.flag = True
@@ -447,7 +450,7 @@ def set_gi_id(jobs, config):
         #             break
         #         else:
         #             continue
-        
+   
         if len(jobs_reverse[i]) == 2:
             jobs_reverse[i][0].new_gi_id = new_gi_id
             jobs_reverse[i][1].new_gi_id = new_gi_id
