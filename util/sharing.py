@@ -406,45 +406,54 @@ def set_gi_id(jobs, config):
         if i in index_list:
             continue
 
-        gi_id = -1
+        new_gi_id = -1
+        choice_list_copy = config_choice_list.get(config).copy()
 
+        for j in choice_list_copy:
+            node = TreeNode_map.get(j)
+            if node.flag == False:
+                node.flag = True
+                new_gi_id = node.value
+                node.change_father()
+                node.traverse_children()
+                break
+            else:
+                continue
         
-        if len(jobs_reverse[i]) == 1 and isinstance(jobs_reverse[i][0], offline_job):
-            for j in config_choice_list.get(config):
-                node = TreeNode_map.get(j)
-                if node.flag == False:
-                    node.flag = True
-                    gi_id = node.value
-                    node.change_father()
-                    node.traverse_children()
-                    break
-                else:
-                    continue
+        # if len(jobs_reverse[i]) == 1 and isinstance(jobs_reverse[i][0], offline_job):
+        #     for j in config_choice_list.get(config):
+        #         node = TreeNode_map.get(j)
+        #         if node.flag == False:
+        #             node.flag = True
+        #             new_gi_id = node.value
+        #             node.change_father()
+        #             node.traverse_children()
+        #             break
+        #         else:
+        #             continue
         
-        else:
-            choice_list_copy = config_choice_list.get(config).copy()
-            # choice_list_copy.reverse()
-            # random.shuffle(choice_list_copy)
-            for j in choice_list_copy:
-                node = TreeNode_map.get(j)
-                if node.flag == False:
-                    find = True
-                    node.flag = True
-                    gi_id = node.value
-                    node.change_father()
-                    node.traverse_children()
-                    break
-                else:
-                    continue
+        # else:
+        #     choice_list_copy = config_choice_list.get(config).copy()
+        #     # choice_list_copy.reverse()
+        #     # random.shuffle(choice_list_copy)
+        #     for j in choice_list_copy:
+        #         node = TreeNode_map.get(j)
+        #         if node.flag == False:
+        #             find = True
+        #             node.flag = True
+        #             new_gi_id = node.value
+        #             node.change_father()
+        #             node.traverse_children()
+        #             break
+        #         else:
+        #             continue
         
         if len(jobs_reverse[i]) == 2:
-            if isinstance(jobs_reverse[i][0], online_job):
-                jobs_reverse[i][0].gi_id = gi_id
-            else:
-                jobs_reverse[i][1].gi_id = gi_id
-        elif isinstance(jobs_reverse[i][0] , online_job):
+            jobs_reverse[i][0].new_gi_id = new_gi_id
+            jobs_reverse[i][1].new_gi_id = new_gi_id
 
-            jobs_reverse[i][0].gi_id = gi_id
+        else:
+            jobs_reverse[i][0].new_gi_id = new_gi_id
     clean_tree()
 
 def search_check_volid(gi_id_list):

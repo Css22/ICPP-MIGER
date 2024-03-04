@@ -2,6 +2,7 @@ import Test.TestForExecutor as TestForExecutor
 import Test.TestForMigration as TestForMigration
 import Test.TestForMIG as TestForMIG
 import Test.TestForTree as TestForTree
+import Test.TestSystem as TestSystem
 import util.MIG_operator as MIG_operator
 import util.MPS_operator as MPS_operator
 UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
@@ -15,7 +16,9 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 # TestForMigration.test_function_do_migrate()
 # TestForMigration.test_function_do_migrate_bug()
 
-TestForMIG.test_table()
+# TestForMIG.test_table()
+# TestSystem.test_for_partition_optimizer()
+TestSystem.testForAllocateAvaliable()
 
 
 

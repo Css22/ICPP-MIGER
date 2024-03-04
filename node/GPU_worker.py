@@ -1,3 +1,4 @@
+import copy
 import subprocess
 import os
 import signal
@@ -14,6 +15,7 @@ import socket
 from itertools import permutations
 from threading import Lock
 from itertools import combinations
+
 temp_lock = Lock()
 busy_table ={
 
@@ -314,16 +316,18 @@ class woker:
           
         valid = []
         migrate_flag = []
+       
         for i in valid_config:
             if check_volid(i.copy(), online_jobs, online_config):
                 valid.append(i)
                 migrate_flag.append(False)
             else:
-                self.allocate_avaliable(online_jobs, online_config)
+                self.allocate_avaliable(online_jobs, online_config, i)
                 valid.append(i)
                 migrate_flag.append(True)
 
         valid_config = valid
+        copy_valid_config = copy.deepcopy(valid_config)
 
         config_list = []
         for i in online_jobs:
@@ -348,7 +352,7 @@ class woker:
         best_config = {}
         best_concurrency  = {}
         best_config_migrate = None
-
+        choose_config = None
         for i in valid_config:
             
             for j in range(0, len(concurrency_jobs)+1):
@@ -400,8 +404,9 @@ class woker:
                                     best_config = tmp_config
                                     best_obj = throught + tmp_throught
                                     best_concurrency = concurrency
-                                    best_config_available = migrate_flag[valid_config.index(i)]
-
+                                    best_config_migrate = migrate_flag[valid_config.index(i)]
+                                    tmp_index = valid_config.index(i)
+                                    choose_config = copy_valid_config[tmp_index]
                             else:
                                 continue
                 else:
@@ -426,7 +431,9 @@ class woker:
                             best_config = config
                             best_obj = throught
                             best_concurrency = concurrency
-                            best_config_available = migrate_flag[valid_config.index(i)]
+                            best_config_migrate = migrate_flag[valid_config.index(i)]
+                            tmp_index = valid_config.index(i)
+                            choose_config = copy_valid_config[tmp_index]
 
         if best_obj == 0 :
             return False
@@ -448,10 +455,13 @@ class woker:
             self.GPU_list[GPU_index].append([i])
             self.config_list[GPU_index].append(best_config.get(i))
         
+
+
+
         if not best_config_migrate:
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         else:
-            self.allocate_gi_id(online_jobs, online_config)
+            self.allocate_avaliable(online_jobs, online_config, choose_config)
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         
         return best_obj
@@ -1002,19 +1012,82 @@ class woker:
                     name = node, GPU_ID=i , load = busy[i]
                     ))
   
-
-    def allocate_gi_id(self, online_jobs, online_config):
-        exist_list = []
-
-        for i in online_jobs:
-            if i.gi_id != -1:
-                exist_list.append(i.gi_id)
     
 
-    def allocate_avaliable(self, online_jobs, online_config):
+    def allocate_avaliable(self, online_jobs, online_config, config):
+        global global_choose_list, global_config_list
+        index = global_config_list.index(config)
+        choose_dir = copy.deepcopy(global_choose_list[index]) 
+        visit_index = []
+        num = len(online_jobs)
+        while True:
+            flag = True
+            for i in range(0, len(online_jobs)):
+                if i in visit_index:
+                    continue
+                if online_jobs[i].gi_id in choose_dir[online_config[i]]:
+                    choose_dir[online_config[i]].remove(online_jobs[i].gi_id)
+                    online_jobs[i].new_gi_id = online_jobs[i].gi_id
+                    flag = False
+                    visit_index.append(i)
+            if flag:
+                break
+
+        for i in range(0, len(online_jobs)):
+            if i in visit_index:
+                continue
+            
+            if len(choose_dir[online_config[i]]) == 0:
+                return False
+            else:
+                online_jobs[i].new_gi_id = choose_dir[online_config[i]][0]
 
 
-        pass
+        GI_ID_list = []
+        visit_list = []
+        order_list = []
+        for i in range(0, len(online_jobs)):
+            if online_jobs[i].gi_id != -1:
+                GI_ID_list.append(online_jobs[i].gi_id )
+             
+        while True:
+            flag = False
+            for i in range(0, len(online_jobs)):
+                if i in visit_list:
+                    continue
+
+                if online_jobs[i].gi_id != -1:
+                    if online_jobs[i].gi_id == online_jobs[i].new_gi_id:
+                        num = num - 1
+                        visit_list.append(i)
+                        flag = True 
+                    else:
+                        if check_available(gi_id= online_jobs[i].new_gi_id, used_list=GI_ID_list):
+                            GI_ID_list.remove(online_jobs[i].gi_id)
+                            GI_ID_list.append(online_jobs[i].new_gi_id)
+                            num = num - 1
+                            visit_list.append(i)
+                            flag = True 
+                            order_list.append(i)
+                else:
+                    if check_available(gi_id= online_jobs[i].new_gi_id, used_list=GI_ID_list):
+                        GI_ID_list.append(online_jobs[i].new_gi_id)
+                        num = num - 1
+                        visit_list.append(i)
+                        flag = True  
+
+
+
+            if num == 0:
+                return order_list
+            
+            if not flag:
+                return False
+            
+                
+
+
+
 
 
     def executor(self, job, UUID,MPS_flag = False, MPS_percentage=None):
