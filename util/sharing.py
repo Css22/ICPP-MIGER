@@ -313,9 +313,9 @@ def check_volid(config, online_jobs, online_config):
     for i in range(0, len(online_jobs)):
         if online_jobs[i].gi_id != -1 :
 
-            gi_id_list.append(online_jobs[i].gi_id)
+            gi_id_list.append(int(online_jobs[i].gi_id))
+            
             config.remove(online_config[i])
-     
     for i in gi_id_list:
         node = TreeNode_map.get(i)
         node.flag = True
@@ -348,7 +348,7 @@ def check_volid(config, online_jobs, online_config):
 
 def check_available(gi_id, used_list):
     for i in used_list:
-        node = TreeNode_map.get(i)
+        node = TreeNode_map.get(int(i))
         node.flag = True
         node.change_father()
         node.traverse_children()
@@ -379,7 +379,7 @@ def set_gi_id(jobs, config):
         if len(jobs_reverse[i]) == 1:
             if isinstance(jobs_reverse[i][0], online_job):
                 if jobs_reverse[i][0].new_gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][0].new_gi_id)
+                    node  = TreeNode_map.get(int(jobs_reverse[i][0].new_gi_id))
                     print(node.value)
                     node.flag = True
                     node.change_father()
@@ -389,7 +389,7 @@ def set_gi_id(jobs, config):
         else:
             if isinstance(jobs_reverse[i][0], online_job):
                 if jobs_reverse[i][0].new_gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][0].new_gi_id)
+                    node  = TreeNode_map.get(int(jobs_reverse[i][0].new_gi_id))
                     node.flag = True
                     node.change_father()
                     node.traverse_children()
@@ -397,7 +397,7 @@ def set_gi_id(jobs, config):
 
             elif isinstance(jobs_reverse[i][1], online_job):
                 if jobs_reverse[i][1].new_gi_id != -1:
-                    node  = TreeNode_map.get(jobs_reverse[i][1].new_gi_id)
+                    node  = TreeNode_map.get(int(jobs_reverse[i][1].new_gi_id))
                     node.flag = True
                     node.change_father()
                     node.traverse_children()
@@ -413,7 +413,7 @@ def set_gi_id(jobs, config):
 
         for j in choice_list_copy:
 
-            node = TreeNode_map.get(j)
+            node = TreeNode_map.get(int(j))
             if node.flag == False:
                 node.flag = True
                 new_gi_id = node.value
@@ -461,7 +461,7 @@ def set_gi_id(jobs, config):
 
 def search_check_volid(gi_id_list):
     for i in gi_id_list:
-        node = TreeNode_map.get(i)
+        node = TreeNode_map.get(int(i))
         if node.flag == True:
             clean_tree()
             return False
@@ -478,7 +478,7 @@ def evalute_solution(gi_id_list, jobs):
 
     for i in range(0, len(gi_id_list)):
         if isinstance(jobs[i], online_job):
-            node = TreeNode_map.get(gi_id_list[i])
+            node = TreeNode_map.get(int(gi_id_list[i]))
             node.flag = True
             node.change_father()
             node.traverse_children()

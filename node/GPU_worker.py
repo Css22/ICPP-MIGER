@@ -134,8 +134,9 @@ class woker:
             if self.cluster_algorithm == 'me':
                 if len(jobs) <= self.max_job_per_GPU: 
                     if(not self.partition_optimizer(jobs, gpu_id)):
+                        print("test2")
                         return False
-                
+
                     elif isinstance(new_job, offline_job):
                         throught_put = self.partition_optimizer(jobs, gpu_id)
                         if throught_put < self.throughput[gpu_id]:
@@ -146,8 +147,9 @@ class woker:
                             self.throughput[gpu_id] = throught_put
                             self.sorted(gpu_id)
                             order_list = self.migrate_order(gpu_id)
+                            print('test0')
                             self.termination(gpu_id)
-
+                            print('test1')
                             if order_list:
                                 self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                             self.creation(gpu_id)
@@ -158,8 +160,9 @@ class woker:
 
                         self.sorted(gpu_id)
                         order_list = self.migrate_order(gpu_id)
+                        print('test2')
                         self.termination(gpu_id)
-                            
+                        print('test3')
                         if order_list:
                             self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                         self.creation(gpu_id)
@@ -460,7 +463,6 @@ class woker:
         
 
 
-        print(best_config_migrate)
         if not best_config_migrate:
             for i in online_jobs:
                 i.new_gi_id = i.gi_id
@@ -619,7 +621,6 @@ class woker:
                                 UUID = j
                                 break
 
-                        
                         MPS_operator.OpenMPS(UUID=UUID)
                         self.executor(job=self.GPU_list[gpu_id][i][0], UUID=UUID)
                         self.GPU_list[gpu_id][i][0].gi_id = ID

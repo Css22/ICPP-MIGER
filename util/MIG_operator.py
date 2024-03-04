@@ -40,20 +40,20 @@ def reset_mig(gpu):
 def create_ins(gpu, ins):
     id_map = {'1c-1g-10gb': 19, '1c-2g-20gb': 14, '1c-3g-40gb': 9, '1c-4g-40gb': 5, '1c-7g-80gb': 0}
     ins_code = id_map[ins]
-    cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code}'
+    cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code} -C'
     p = subprocess.Popen([cmd], shell=True, stdout=subprocess.PIPE)
     p.wait()
     read = str(p.stdout.read())
     ID = re.findall(r'\d+', read)[0]
     # need to retrieve GPU instance ID from output
-    cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
-    p = subprocess.Popen([cmd], shell=True)
-    p.wait()
+    # cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
+    # p = subprocess.Popen([cmd], shell=True)
+    # p.wait()
     time.sleep(2)
     return ID
 
 def destroy_ins(gpu, ID):
-    cmd = f'sudo nvidia-smi mig -dci -i 0 -gi {ID} -ci 0 && sudo nvidia-smi mig -dgi -i 0 -gi {ID}'
+    cmd = f'sudo nvidia-smi mig -dci -i {gpu} -gi {ID} -ci 0 && sudo nvidia-smi mig -dgi -i {gpu} -gi {ID}'
     p = subprocess.Popen([cmd], shell=True)
     p.wait()
 

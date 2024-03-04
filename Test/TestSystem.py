@@ -103,7 +103,7 @@ def test_running():
 
     for i in job_list:
         node1.node_schedule(gpu_id=0, new_job=i)
-        time.sleep(60)
+        time.sleep(30)
 
 def simulate_execution(jobs):
     for i in jobs:
