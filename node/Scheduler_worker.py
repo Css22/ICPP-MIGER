@@ -44,7 +44,6 @@ class SchedulerObject:
 
     def try_schedule(self):
         if not job_queue.empty():
-
             item = job_queue.queue[0] 
             if schedule(item):
                 item = job_queue.get()
@@ -97,7 +96,7 @@ def schedule(jobid):
         return False
 
 def start_cluster():
-    # jobs = generate_jobs()
+    jobs = generate_jobs()
 
     pass
 

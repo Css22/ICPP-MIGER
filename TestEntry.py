@@ -23,5 +23,5 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 
 # TestSystem.test_job_finish()
 
-
-TestJobAnalysis.test_job_metrices()
+TestSystem.test_online_job_migration()
+# TestJobAnalysis.test_job_metrices()

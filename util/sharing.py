@@ -796,6 +796,7 @@ def handle_job_log():
         if time_table[i]['end_time'] > end_time:
             end_time = time_table[i]['end_time']
     makespan =  end_time - start_time
+    
     print("MakeSpan: " + str(makespan.total_seconds()))
     print("JCT: " + str(JCT))
 

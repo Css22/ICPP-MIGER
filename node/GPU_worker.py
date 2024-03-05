@@ -343,6 +343,16 @@ class woker:
                j.remove(i)
         
         if len(offline_jobs) == 0:
+            for i in copy_valid_config:
+                if self.allocate_avaliable(online_jobs, online_config, i):
+                    tmp_index = copy_valid_config.index(i)
+
+
+            best_config_migrate = migrate_flag[copy_valid_config.index(i)]
+            tmp_index = copy_valid_config.index(i)
+            choose_config = copy_valid_config[tmp_index]
+
+
             self.GPU_list[GPU_index]  = []
             self.config_list[GPU_index] = []
 
@@ -350,9 +360,20 @@ class woker:
                 self.GPU_list[GPU_index].append([online_jobs[i]])
                 self.config_list[GPU_index].append(config_list[i])
 
-            for i in online_jobs:
-                i.new_gi_id = i.gi_id
-            set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
+
+            if not best_config_migrate:
+                for i in online_jobs:
+                    i.new_gi_id = i.gi_id
+                set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
+            else:
+          
+                self.allocate_avaliable(online_jobs, online_config, choose_config)
+                set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
+        
+            # for i in online_jobs:
+            #     i.new_gi_id = i.gi_id
+
+            # set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
             return 0.0000001, 
 
         best_obj = 0
