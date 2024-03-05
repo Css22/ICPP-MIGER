@@ -1,6 +1,7 @@
 import glob
 import json
 import psutil
+from datetime import datetime
 class job:
     def __init__(self, model_name, config, batch_Size, average_time, tail, jobid=0):
         self.model_name = model_name
@@ -734,3 +735,69 @@ def check_process_running(pid):
         if process.is_running():
             return True
     return False
+
+
+
+def handle_job_log():
+    log_path = '/data/zbw/MIG/MIG/ATC-MIG/log/job_log'
+    job_path = '/data/zbw/MIG/MIG/ATC-MIG/configs/Job_id.json'
+    job_list = generate_jobs()
+    
+
+    time_table = {}
+
+    offline_job_list = []
+    for i in job_list:
+        if isinstance(i, offline_job):
+            offline_job_list.append(i)
+            time_table[i.jobid] = {}
+
+
+
+
+    for i in offline_job_list:
+
+        with open(log_path, 'r') as file:
+            for line in file:
+                fields = line.split()
+                timestamp_str = fields[0] + ' ' + fields[1]
+                timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+                identifier = int(fields[2])
+                action = fields[3]
+                if int(identifier) == int(i.jobid):
+                    if action == 'finish':
+                        time_table[i.jobid]['end_time'] = timestamp
+
+                    if action == 'start':
+                        if 'start' not in time_table[i.jobid].keys():
+                            time_table[i.jobid]['start'] = timestamp
+
+        file.close()  
+    
+
+
+    JCT = 0
+    makespan = 0
+    start_time = '2024-04-04 00:00:00'
+    end_time = '2023-09-01 00:20:10'
+
+
+    start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+    end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+    for i in time_table.keys():
+        JCT = JCT +  (time_table[i]['end_time'] -  time_table[i]['start']).total_seconds()
+    JCT = JCT/len(offline_job_list)
+    
+
+    for i in time_table.keys():
+        if time_table[i]['start'] < start_time:
+            start_time = time_table[i]['start']
+        if time_table[i]['end_time'] > end_time:
+            end_time = time_table[i]['end_time']
+    makespan =  end_time - start_time
+    print("MakeSpan: " + str(makespan.total_seconds()))
+    print("JCT: " + str(JCT))
+
+
+    
