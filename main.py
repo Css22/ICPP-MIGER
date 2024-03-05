@@ -6,6 +6,7 @@ import util.MPS_operator as MPS_operator
 import node.GPU_worker as GPU_worker
 import node.Scheduler_worker as  Scheduler
 import argparse
+from log.job_log import *
 # import MIG_util.node_state
 
 
@@ -13,7 +14,7 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='simulator')
-    parser.add_argument('--type', choices=['worker','scheduler'], default='worker')
+    parser.add_argument('--type', choices=['worker','scheduler', 'analyst'], default='analyst')
 
     args = parser.parse_args()
 
@@ -23,3 +24,5 @@ if __name__ == '__main__':
         GPU_worker.WorkerService()
     if args.type == 'scheduler':
         Scheduler.start_service()
+    if args.type == "analyst":
+        handle_job_log()
