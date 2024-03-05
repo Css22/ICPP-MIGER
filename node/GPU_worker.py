@@ -145,12 +145,12 @@ class woker:
                         else:
                             self.throughput[gpu_id] = throught_put
                             self.sorted(gpu_id)
-                            for i in range(0, len(self.GPU_list[0])):
-                                print(self.GPU_list[0][i][0].gi_id, self.GPU_list[0][i][0].new_gi_id)
+                            # for i in range(0, len(self.GPU_list[0])):
+                            #     print(self.GPU_list[0][i][0].gi_id, self.GPU_list[0][i][0].new_gi_id)
                             order_list = self.migrate_order(gpu_id)
                
                             self.termination(gpu_id)
-                            print(order_list)
+                         
                             if order_list:
                                 self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                             self.creation(gpu_id)
@@ -988,8 +988,18 @@ class woker:
                         if flag:
                             self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)
                             self.sorted(gpu_index)
+                            order_list = self.migrate_order(gpu_index)
+               
                             self.termination(gpu_index)
+                         
+                            if order_list:
+                                self.do_migrate(gpu_id=gpu_index, order_list=order_list)
                             self.creation(gpu_index)
+
+                            # self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)
+                            # self.sorted(gpu_index)
+                            # self.termination(gpu_index)
+                            # self.creation(gpu_index)
                             JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
                                 type ='finish', JobID = jobid
                             ))

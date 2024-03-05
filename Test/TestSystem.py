@@ -107,6 +107,32 @@ def test_running():
         time.sleep(30)
         print(node1.GPU_list[0], node1.config_list[0])
 
+
+def test_job_finish():
+    node1 = woker()
+    node1.cluster_algorithm = 'me'
+    job_list = []
+    online_job1 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=0)
+    online_job2 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=1)
+    offline_job1 =  offline_job(model_name='resnet50', batch_Size=32, epoch=3, jobid=2)
+
+    job_list.append(online_job1)
+    job_list.append(online_job2)
+    job_list.append(offline_job1)
+
+
+    for i in job_list:
+        print("try schedule")
+        node1.node_schedule(gpu_id=0, new_job=i)
+        time.sleep(30)
+        print(node1.GPU_list[0], node1.config_list[0])
+
+    time.sleep(60)
+
+    offline_job2 =  offline_job(model_name='resnet50', batch_Size=32, epoch=3, jobid=3)
+    print("try schedule")
+    node1.node_schedule(gpu_id=0, new_job=i)
+
 def simulate_execution(jobs):
     for i in jobs:
         i.gi_id = i.new_gi_id

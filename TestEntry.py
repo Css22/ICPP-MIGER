@@ -20,7 +20,7 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 # TestSystem.test_for_partition_optimizer()
 # TestSystem.testForAllocateAvaliable()
 
-TestSystem.test_running()
+TestSystem.test_job_finish()
 
 # print(MPS_operator.GetPercentage(UUID))
 # MPS_operator.SetPercentage(UUID=UUID, Percentage=30)
