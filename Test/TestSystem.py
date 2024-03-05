@@ -114,12 +114,26 @@ def test_job_finish():
     job_list = []
     online_job1 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=0)
     online_job2 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=1)
-    offline_job1 =  offline_job(model_name='resnet50', batch_Size=32, epoch=3, jobid=2)
+    offline_job1 =  offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=2)
+    offline_job2 =  offline_job(model_name='GAN', batch_Size=32, epoch=5, jobid=3)
+
 
     job_list.append(online_job1)
+
+    # node1.partition_optimizer(job_list,0)
+    # simulate_execution(job_list)
+
     job_list.append(online_job2)
+
+    # node1.partition_optimizer(job_list,0)
+    # simulate_execution(job_list)
+
     job_list.append(offline_job1)
 
+    # node1.partition_optimizer(job_list,0)
+    # simulate_execution(job_list)
+
+    # print(node1.partition_optimizer(job_list,0))
 
     for i in job_list:
         print("try schedule")
@@ -127,11 +141,19 @@ def test_job_finish():
         time.sleep(30)
         print(node1.GPU_list[0], node1.config_list[0])
 
-    time.sleep(60)
+    time.sleep(200)
+    job_list.append(offline_job2)
 
-    offline_job2 =  offline_job(model_name='resnet50', batch_Size=32, epoch=3, jobid=3)
+    # for i in job_list:
+    #     node1.partition_optimizer(job_list,0)
+    #     simulate_execution(job_list)
+
+    # print(node1.partition_optimizer(job_list,0))
+
     print("try schedule")
-    node1.node_schedule(gpu_id=0, new_job=i)
+    node1.node_schedule(gpu_id=0, new_job=offline_job2)
+
+    print(node1.GPU_list[0], node1.config_list[0])
 
 def simulate_execution(jobs):
     for i in jobs:

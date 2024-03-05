@@ -2,5 +2,5 @@
     "0": "online_resnet50_32_50",
     "1": "online_resnet50_32_50",
     "2": "offline_resnet50_3",
-    "3": "offline_resnet50_3"
+    "3": "offline_GAN_3"
 }
