@@ -102,8 +102,10 @@ def test_running():
     job_list.append(offline_job1)
 
     for i in job_list:
+        print("try schedule")
         node1.node_schedule(gpu_id=0, new_job=i)
         time.sleep(30)
+        print(node1.GPU_list[0], node1.config_list[0])
 
 def simulate_execution(jobs):
     for i in jobs:

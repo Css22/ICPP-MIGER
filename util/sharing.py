@@ -380,7 +380,6 @@ def set_gi_id(jobs, config):
             if isinstance(jobs_reverse[i][0], online_job):
                 if jobs_reverse[i][0].new_gi_id != -1:
                     node  = TreeNode_map.get(int(jobs_reverse[i][0].new_gi_id))
-                    print(node.value)
                     node.flag = True
                     node.change_father()
                     node.traverse_children()

@@ -134,7 +134,6 @@ class woker:
             if self.cluster_algorithm == 'me':
                 if len(jobs) <= self.max_job_per_GPU: 
                     if(not self.partition_optimizer(jobs, gpu_id)):
-                        print("test2")
                         return False
 
                     elif isinstance(new_job, offline_job):
@@ -146,10 +145,12 @@ class woker:
                         else:
                             self.throughput[gpu_id] = throught_put
                             self.sorted(gpu_id)
+                            for i in range(0, len(self.GPU_list[0])):
+                                print(self.GPU_list[0][i][0].gi_id, self.GPU_list[0][i][0].new_gi_id)
                             order_list = self.migrate_order(gpu_id)
-                            print('test0')
+               
                             self.termination(gpu_id)
-                            print('test1')
+                            print(order_list)
                             if order_list:
                                 self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                             self.creation(gpu_id)
@@ -160,9 +161,10 @@ class woker:
 
                         self.sorted(gpu_id)
                         order_list = self.migrate_order(gpu_id)
-                        print('test2')
+
+
                         self.termination(gpu_id)
-                        print('test3')
+
                         if order_list:
                             self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                         self.creation(gpu_id)
@@ -351,7 +353,7 @@ class woker:
             for i in online_jobs:
                 i.new_gi_id = i.gi_id
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
-            return 0.0000001
+            return 0.0000001, 
 
         best_obj = 0
         best_config = {}
@@ -468,10 +470,11 @@ class woker:
                 i.new_gi_id = i.gi_id
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         else:
+          
             self.allocate_avaliable(online_jobs, online_config, choose_config)
             set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
         
-        return best_obj
+        return best_obj, best_config_migrate
 
     def check_percentage(self, online_job, config_id):
         global online_job_data, config_map
@@ -575,9 +578,9 @@ class woker:
 
         fix_partition = []
         destory_partition = []
-
+        
         for i in self.fix_job[gpu_id]:
-            fix_partition.append(i.gi_id)
+            fix_partition.append(int(i.gi_id))
 
         for i in UUID_table[gpu_id].keys():
             
@@ -708,65 +711,65 @@ class woker:
                     continue
                 if len(self.GPU_list[gpu_id][i]) == 1:
                     if isinstance(self.GPU_list[gpu_id][i][0], online_job):
-                        if self.GPU_list[gpu_id][i][0].gi_id != -1:
-                            if self.GPU_list[gpu_id][i][0].gi_id == self.GPU_list[gpu_id][i][0].new_gi_id:
+                        if int(self.GPU_list[gpu_id][i][0].gi_id) != -1:
+                            if int(self.GPU_list[gpu_id][i][0].gi_id) == int(self.GPU_list[gpu_id][i][0].new_gi_id):
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
                             else:
-                                if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
-                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][0].gi_id)
-                                    GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                if check_available(gi_id= int(self.GPU_list[gpu_id][i][0].new_gi_id), used_list=GI_ID_list):
+                                    GI_ID_list.remove(int(self.GPU_list[gpu_id][i][0].gi_id))
+                                    GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].new_gi_id))
                                     num = num - 1
                                     visit_list.append(i)
                                     flag = True 
                                     order_list.append(i)
                         else:
-                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
-                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                            if check_available(gi_id= int(self.GPU_list[gpu_id][i][0].new_gi_id), used_list=GI_ID_list):
+                                GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].new_gi_id))
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
 
                 if len(self.GPU_list[gpu_id][i]) == 2: 
                     if isinstance(self.GPU_list[gpu_id][i][0], online_job):
-                        if self.GPU_list[gpu_id][i][0].gi_id != -1:
-                            if self.GPU_list[gpu_id][i][0].gi_id == self.GPU_list[gpu_id][i][0].new_gi_id:
+                        if int(self.GPU_list[gpu_id][i][0].gi_id) != -1:
+                            if int(self.GPU_list[gpu_id][i][0].gi_id) == int(self.GPU_list[gpu_id][i][0].new_gi_id):
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
                             else:
-                                if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
-                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][0].gi_id)
-                                    GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                                if check_available(gi_id= int(self.GPU_list[gpu_id][i][0].new_gi_id), used_list=GI_ID_list):
+                                    GI_ID_list.remove(int(self.GPU_list[gpu_id][i][0].gi_id))
+                                    GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].new_gi_id))
                                     num = num - 1
                                     visit_list.append(i)
                                     flag = True 
                                     order_list.append(i)
                         
                         else:
-                            if check_available(gi_id= self.GPU_list[gpu_id][i][0].new_gi_id, used_list=GI_ID_list):
-                                GI_ID_list.append(self.GPU_list[gpu_id][i][0].new_gi_id)
+                            if check_available(gi_id= int(self.GPU_list[gpu_id][i][0].new_gi_id), used_list=GI_ID_list):
+                                GI_ID_list.append(int(self.GPU_list[gpu_id][i][0].new_gi_id))
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
                     else:
-                        if self.GPU_list[gpu_id][i][1].gi_id != -1:
-                            if self.GPU_list[gpu_id][i][1].gi_id == self.GPU_list[gpu_id][i][1].new_gi_id:
+                        if int(self.GPU_list[gpu_id][i][1].gi_id) != -1:
+                            if int(self.GPU_list[gpu_id][i][1].gi_id) == int(self.GPU_list[gpu_id][i][1].new_gi_id):
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
                             else:
-                                if check_available(gi_id= self.GPU_list[gpu_id][i][1].new_gi_id, used_list=GI_ID_list):
-                                    GI_ID_list.remove(self.GPU_list[gpu_id][i][1].gi_id)
-                                    GI_ID_list.append(self.GPU_list[gpu_id][i][1].new_gi_id)
+                                if check_available(gi_id= int(self.GPU_list[gpu_id][i][1].new_gi_id), used_list=GI_ID_list):
+                                    GI_ID_list.remove(int(self.GPU_list[gpu_id][i][1].gi_id))
+                                    GI_ID_list.append(int(self.GPU_list[gpu_id][i][1].new_gi_id))
                                     num = num - 1
                                     visit_list.append(i)
                                     flag = True 
                                     order_list.append(i)
                         else:
-                            if check_available(gi_id= self.GPU_list[gpu_id][i][1].new_gi_id, used_list=GI_ID_list):
-                                GI_ID_list.append(self.GPU_list[gpu_id][i][1].new_gi_id)
+                            if check_available(gi_id= int(self.GPU_list[gpu_id][i][1].new_gi_id), used_list=GI_ID_list):
+                                GI_ID_list.append(int(self.GPU_list[gpu_id][i][1].new_gi_id))
                                 num = num - 1
                                 visit_list.append(i)
                                 flag = True 
@@ -1031,9 +1034,10 @@ class woker:
             for i in range(0, len(online_jobs)):
                 if i in visit_index:
                     continue
-                if online_jobs[i].gi_id in choose_dir[online_config[i]]:
-                    choose_dir[online_config[i]].remove(online_jobs[i].gi_id)
-                    online_jobs[i].new_gi_id = online_jobs[i].gi_id
+                if int(online_jobs[i].gi_id) in choose_dir[online_config[i]]:
+                   
+                    choose_dir[online_config[i]].remove(int(online_jobs[i].gi_id))
+                    online_jobs[i].new_gi_id = int(online_jobs[i].gi_id)
                     flag = False
                     visit_index.append(i)
             if flag:

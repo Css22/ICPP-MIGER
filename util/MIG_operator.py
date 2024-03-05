@@ -38,6 +38,7 @@ def reset_mig(gpu):
     p.wait()
 
 def create_ins(gpu, ins):
+    print(ins)
     id_map = {'1c-1g-10gb': 19, '1c-2g-20gb': 14, '1c-3g-40gb': 9, '1c-4g-40gb': 5, '1c-7g-80gb': 0}
     ins_code = id_map[ins]
     cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code} -C'
@@ -45,6 +46,7 @@ def create_ins(gpu, ins):
     p.wait()
     read = str(p.stdout.read())
     ID = re.findall(r'\d+', read)[0]
+    print(f"create instance with ID {ID}")
     # need to retrieve GPU instance ID from output
     # cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
     # p = subprocess.Popen([cmd], shell=True)
@@ -64,9 +66,11 @@ def create_ins_with_ID(gpu, ins, req_ID):
         if int(ID) == int(req_ID):
             for i in tem_ID_list:
                 destroy_ins(gpu, i)
+            print(f"create instance with ID {req_ID}")
             return ID
         else:
             tem_ID_list.append(ID)
+  
             
 def do_partition(gpu, partition): # partition is a list of slice # code is partition code, e.g. '0', '1',...
     id_map = {1: 19, 2: 14, 3: 9, 4: 5, 7: 0}
