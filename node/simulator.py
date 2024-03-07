@@ -173,7 +173,8 @@ class simulator:
                     
                     else:
                         if isinstance(node1.GPU_list[i][j][0], online_job):
-                            self.caculate_completion_time_concurrency(offline_job= node1.GPU_list[i][j][1], online_job= node1.GPU_list[i][j][0] ,config= configs[j])
+                            find_optimal_SM
+                            self.caculate_completion_time_concurrency(offline_job= node1.GPU_list[i][j][1], online_job= node1.GPU_list[i][j][0] ,config= configs[j], )
                         else:
                             self.caculate_completion_time_concurrency(offline_job= node1.GPU_list[i][j][0], online_job= node1.GPU_list[i][j][1] ,config= configs[j])
             
@@ -371,9 +372,11 @@ class simulator:
                     offline_job.speed = 0
     
     def caculate_completion_time_concurrency(self, offline_job:offline_job, online_job:online_job, config):
+
+        online_MPS, offline_MPS = find_optimal_SM(online_job, offline_job, config)
         min = 0 
         for i in throught_list[config]:
-            if i[0] == offline_job.model_name and i[2] == online_job.model_name and int(i[3]) == int(online_job.batch_Size):
+            if i[0] == offline_job.model_name and i[2] == online_job.model_name and int(i[3]) == int(online_job.batch_Size) and int(offline_MPS) == int(i[1]) and int(online_MPS) == int(i[4]):
                 if is_float(i[5]) and is_float(i[6]):
                     speed = 1/float(i[5])
                     if speed >= min:
