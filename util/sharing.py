@@ -674,6 +674,65 @@ def calculate_busy(config_list, gpu_list, monitor_result):
 
     return utilization
 
+def calculate_busy_simulator(config_list, gpu_list):
+
+    utilization = 0
+    for i in range(0, len(config_list)):
+        
+        A100_percnetage = config_map.get(config_list[i])/7
+        MIG_utilizaiton = 0
+
+        if len(gpu_list[i]) == 2:
+
+            MIG_utilizaiton = 1 
+
+        else:
+            if isinstance(gpu_list[i][0], offline_job):
+                if config_map.get(config_list[i]) == 1:
+                    MIG_utilizaiton = 1
+                elif check_speedup(gpu_list[i][0], config_list[i]):
+                    MIG_utilizaiton = 1
+                else:
+                    MIG_utilizaiton = calculate_utilization_simulator(gpu_list[i][0], config_list[i])
+            else:
+                MIG_utilizaiton = calculate_utilization_simulator(gpu_list[i][0], config_list[i])
+   
+        utilization = utilization + MIG_utilizaiton * A100_percnetage
+
+    return utilization
+
+def calculate_utilization_simulator(job, config):
+    dir = '/data/zbw/MIG/MIG/ATC-MIG/jobs/profile/offline_profile/'
+    utilization = 0  
+    if isinstance(job, online_job):
+        dir = '/data/zbw/MIG/MIG/ATC-MIG/jobs/profile/online_profile/'
+        path = dir + job.model_name
+
+        with open(path, 'r') as file:
+            lines = file.readlines()  # 读取所有行到一个列表中
+            lines.reverse()
+         
+            for line in lines:
+                result = line.strip().split(" ")
+                MIG_config = result[0].split("+")[0]
+                SM = float(result[0].split("+")[1])
+                if result[3] != 'error' and MIG_config == config and float(result[3]) * 1000 < job.qos:
+                    file.close()
+                    return SM/100
+                
+        file.close()
+
+    else:
+        path = dir + job.model_name+'_profile_result'
+        with open(path, 'r') as file:
+            for line in file:
+                lines = line.strip().split(" ")
+                if lines[0] == config:
+                   utilization = float(lines[2])
+        file.close()
+
+    return utilization 
+
 
 def is_float(s):
     try:

@@ -133,7 +133,7 @@ class woker:
                 
             if self.cluster_algorithm == 'me':
                 if len(jobs) <= self.max_job_per_GPU: 
-                    if(not self.partition_optimizer(jobs, gpu_id)):
+                    if(not self.partition_optimizer(jobs, gpu_id)[0]):
                         return False
 
                     elif isinstance(new_job, offline_job):
@@ -212,8 +212,7 @@ class woker:
 
 
     
-        if len(valid_config) == 0:
-            return False
+       
 
         valid = []
        
@@ -221,7 +220,9 @@ class woker:
             if check_volid(i.copy(), online_jobs, online_config):
                 valid.append(i)
 
-   
+        if len(valid) == 0:
+            return False
+
         valid_config = valid
             
 
@@ -229,7 +230,7 @@ class woker:
             for j in online_config:
                 i.remove(j)
     
-        
+       
         best_obj = 0
         best_config = None
         for i in valid_config:
@@ -246,8 +247,9 @@ class woker:
                     self.GPU_list[gpu_id].append([jobs[j]])
                     self.config_list[gpu_id].append(config_list[j])
                     set_gi_id(self.GPU_list[gpu_id], config_list)
+                  
                 return 0.0000001
-          
+    
             all_combinations = list(permutations(i, n))
             for combo in all_combinations:
                
@@ -275,7 +277,7 @@ class woker:
         set_gi_id(self.GPU_list[gpu_id], config_list)
 
         self.config_list[gpu_id] = config_list
-
+   
         return best_obj
     
     def partition_optimizer(self, jobs, GPU_index):
@@ -342,14 +344,28 @@ class woker:
            for j in valid_config:
                j.remove(i)
         
+        if len(valid_config) == 0:
+            return False, False
+
         if len(offline_jobs) == 0:
-            for i in copy_valid_config:
-                if self.allocate_avaliable(online_jobs, online_config, i):
-                    tmp_index = copy_valid_config.index(i)
+            flag = False
+            for i in range(0, len(valid_config)):
+                if check_volid(copy_valid_config[i].copy(), online_jobs, online_config):
+                    flag = True
+                    tmp_index = i
+                    break
 
+            if not flag:
+                i = 0
 
-            best_config_migrate = migrate_flag[copy_valid_config.index(i)]
-            tmp_index = copy_valid_config.index(i)
+            # for i in copy_valid_config:
+            #     if self.allocate_avaliable(online_jobs, online_config, i):
+            #         tmp_index = copy_valid_config.index(i)
+
+            # best_config_migrate = migrate_flag[i]
+            # tmp_index = copy_valid_config.index(i)
+                
+
             choose_config = copy_valid_config[tmp_index]
 
 
@@ -361,7 +377,7 @@ class woker:
                 self.config_list[GPU_index].append(config_list[i])
 
 
-            if not best_config_migrate:
+            if flag:
                 for i in online_jobs:
                     i.new_gi_id = i.gi_id
                 set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
@@ -374,7 +390,7 @@ class woker:
             #     i.new_gi_id = i.gi_id
 
             # set_gi_id(self.GPU_list[GPU_index], self.config_list[GPU_index])
-            return 0.0000001, 
+            return 0.0000001, False
 
         best_obj = 0
         best_config = {}
@@ -465,7 +481,7 @@ class woker:
                             choose_config = copy_valid_config[tmp_index]
 
         if best_obj == 0 :
-            return False
+            return False, False
 
         self.GPU_list[GPU_index]  = []
         self.config_list[GPU_index] = []
@@ -1190,17 +1206,17 @@ class woker:
                         return False
                     else:
                         self.throughput[gpu_id] = throught_put
-                        self.sorted(gpu_id)
-                        self.termination(gpu_id)
-                        self.creation(gpu_id)
+                        # self.sorted(gpu_id)
+                        # self.termination(gpu_id)
+                        # self.creation(gpu_id)
 
                 else:
                     throught_put = self.miso_partition_optimizer(jobs, gpu_id)
                     self.throughput[gpu_id] = throught_put
                     
-                    self.sorted(gpu_id)
-                    self.termination(gpu_id)
-                    self.creation(gpu_id)
+                    # self.sorted(gpu_id)
+                    # self.termination(gpu_id)
+                    # self.creation(gpu_id)
                     self.fix_job[gpu_id].append(new_job)
 
                 return True
@@ -1210,11 +1226,11 @@ class woker:
                 
         if self.cluster_algorithm == 'me':
             if len(jobs) <= self.max_job_per_GPU: 
-                if(not self.partition_optimizer(jobs, gpu_id)):
+                if(not self.partition_optimizer(jobs, gpu_id)[0]):
                     return False
 
                 elif isinstance(new_job, offline_job):
-                    throught_put = self.partition_optimizer(jobs, gpu_id)
+                    throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
                     if throught_put < self.throughput[gpu_id]:
                         jobs.remove(new_job)
                         self.partition_optimizer(jobs, gpu_id)
@@ -1234,7 +1250,7 @@ class woker:
                         # self.creation(gpu_id)
 
                 else:
-                    throught_put = self.partition_optimizer(jobs, gpu_id)
+                    throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
                     self.throughput[gpu_id] = throught_put
 
                     # self.sorted(gpu_id)
