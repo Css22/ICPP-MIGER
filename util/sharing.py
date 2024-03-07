@@ -34,6 +34,11 @@ class offline_job:
         self.batch_Size = batch_Size
         self.epoch = epoch
         self.jobid = jobid
+        self.submit_time = 0
+        self.start_time = -1
+        self.progress = 0
+        self.end_time = None
+        self.speed = 0
 
 
 def get_throught_single_list():
