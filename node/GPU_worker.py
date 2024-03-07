@@ -137,7 +137,7 @@ class woker:
                         return False
 
                     elif isinstance(new_job, offline_job):
-                        throught_put = self.partition_optimizer(jobs, gpu_id)
+                        throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
                         if throught_put < self.throughput[gpu_id]:
                             jobs.remove(new_job)
                             self.partition_optimizer(jobs, gpu_id)
@@ -151,12 +151,12 @@ class woker:
                
                             self.termination(gpu_id)
                          
-                            if order_list:
+                            if order_list and best_config_migrate:
                                 self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                             self.creation(gpu_id)
 
                     else:
-                        throught_put = self.partition_optimizer(jobs, gpu_id)
+                        throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
                         self.throughput[gpu_id] = throught_put
 
                         self.sorted(gpu_id)
@@ -165,7 +165,7 @@ class woker:
 
                         self.termination(gpu_id)
 
-                        if order_list:
+                        if order_list and best_config_migrate:
                             self.do_migrate(gpu_id=gpu_id, order_list=order_list)
                         self.creation(gpu_id)
                         # self.sorted(gpu_id)
@@ -1171,8 +1171,88 @@ class woker:
 
 
 
+    def simulator_schedule(self, new_job, gpu_id):
+        jobs = []
+        for i in self.GPU_list[gpu_id]:
+            for j in i:
+                jobs.append(j)
+        jobs.append(new_job)
+        if self.cluster_algorithm == 'miso':
+            if len(jobs) <= self.max_job_per_GPU:
+                if(not self.miso_partition_optimizer(jobs, gpu_id)):
+                    return False
+                
+                elif isinstance(new_job, offline_job):
+                    throught_put = self.miso_partition_optimizer(jobs, gpu_id)
+                    if throught_put < self.throughput[gpu_id]:
+                        jobs.remove(new_job)
+                        self.miso_partition_optimizer(jobs, gpu_id)
+                        return False
+                    else:
+                        self.throughput[gpu_id] = throught_put
+                        self.sorted(gpu_id)
+                        self.termination(gpu_id)
+                        self.creation(gpu_id)
+
+                else:
+                    throught_put = self.miso_partition_optimizer(jobs, gpu_id)
+                    self.throughput[gpu_id] = throught_put
+                    
+                    self.sorted(gpu_id)
+                    self.termination(gpu_id)
+                    self.creation(gpu_id)
+                    self.fix_job[gpu_id].append(new_job)
+
+                return True
+            
+            else:
+                return False
+                
+        if self.cluster_algorithm == 'me':
+            if len(jobs) <= self.max_job_per_GPU: 
+                if(not self.partition_optimizer(jobs, gpu_id)):
+                    return False
+
+                elif isinstance(new_job, offline_job):
+                    throught_put = self.partition_optimizer(jobs, gpu_id)
+                    if throught_put < self.throughput[gpu_id]:
+                        jobs.remove(new_job)
+                        self.partition_optimizer(jobs, gpu_id)
+                        return False
+                    else:
+                        self.throughput[gpu_id] = throught_put
+                        
+                        # self.sorted(gpu_id)
+                        #     # for i in range(0, len(self.GPU_list[0])):
+                        #     #     print(self.GPU_list[0][i][0].gi_id, self.GPU_list[0][i][0].new_gi_id)
+                        # order_list = self.migrate_order(gpu_id)
+               
+                        # self.termination(gpu_id)
+                         
+                        # if order_list:
+                        #     self.do_migrate(gpu_id=gpu_id, order_list=order_list)
+                        # self.creation(gpu_id)
+
+                else:
+                    throught_put = self.partition_optimizer(jobs, gpu_id)
+                    self.throughput[gpu_id] = throught_put
+
+                    # self.sorted(gpu_id)
+                    # order_list = self.migrate_order(gpu_id)
 
 
+                    # self.termination(gpu_id)
+
+                    # if order_list:
+                    #     self.do_migrate(gpu_id=gpu_id, order_list=order_list)
+                    # self.creation(gpu_id)
+                        # self.sorted(gpu_id)
+                        # self.termination(gpu_id)
+                        # self.creation(gpu_id)
+                    
+                    self.fix_job[gpu_id].append(new_job)
+
+                return True
 
 class GPU_monitor:
     def __init__(self):

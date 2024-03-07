@@ -8,7 +8,7 @@ sys.path.append('/data/zbw/MIG/MIG/MIG_Schedule')
 # from schedule.scheduler.muxflow_scheduler import muxflow_sheduler
 from jobs.profile.standardized_throughput import *
 from util.sharing import *
-
+from node.GPU_worker import *
 random.seed(17)
 
 job_list = get_job_list()
@@ -106,8 +106,26 @@ class simulator:
             GPU_list = []
             for i in range(0, self.GPU_num):
                 GPU_list.append([])
+
+
+            node1 = woker()
+            node1.cluster_algorithm = 'me'
             
+
+            for i in range(0, self.GPU_num):
+                node1.GPU_list.append([])
+                node1.throughput.append(0)
+                node1.config_list.append([])
+                node1.fix_job.append([])
+                node1.SM_percentage.append([])
+
+            
+
+
             scheduler = I_sheduler(GPU_list= GPU_list, cluster_algorithm=self.cluster_algorithm)
+
+
+            
             for i in self.online_jobs:
                 scheduler.I_cluster(i)
             
