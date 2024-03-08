@@ -151,7 +151,7 @@ class simulator:
             # for i in range(0, len(scheduler.GPU_list)):
             #     # I_set_gi_id(scheduler.GPU_list[i], scheduler.config_list[i])
             #     I_search_solution(scheduler.GPU_list[i], scheduler.config_list[i])
-
+            
             for j in self.offline_jobs:
                 gpu_id = self.get_minworkload(node1)
                 if node1.simulator_schedule(j, gpu_id):

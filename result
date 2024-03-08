@@ -1,0 +1,46 @@
+相较与之前，MISO将任务直接调度到任务数量最小的GPU上，这种方式带来很大的性能提升。（在相同局部优化算法下，两个集群算法的对比:
+
+MISO的局部优化算法
+OUR：
+avarage_queue_time :  99684.924
+JCT:  116002.4365
+makespan:  243209
+MISO：
+avarage_queue_time :  1433849.8845
+JCT:  1449759.951
+makespan:  2907691
+
+
+
+我们的局部优化算法
+
+OUR：
+avarage_queue_time :  63193.574
+JCT:  82232.033
+makespan:  173644
+
+MISO：
+avarage_queue_time :  108508.661
+JCT:  125110.0315
+makespan:  260889
+
+
+在相同的集群调度算法下，单MIG（MISO）和我们的算法的对比。
+
+OUR:
+avarage_queue_time :  63193.574
+JCT:  82232.033
+makespan:  173644
+
+
+MISO:
+avarage_queue_time :  99684.924
+JCT:  116002.4365
+makespan:  243209
+
+实验对比：有碎片化算法 和 使用默认的gi_id分配规则
+
+
+
+实验对比：有碎片化算法 和 有碎片化算法加上在线任务的自迁移
+

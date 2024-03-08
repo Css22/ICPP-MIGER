@@ -99,6 +99,7 @@ def get_uuid(gpu_id):
             continue
         if flag:
             match = re.search(r'MIG-[\da-fA-F\-]+', line.strip())
+            print(match)
             uuid = match.group()
             UUID_list.append(uuid)
     return UUID_list
