@@ -180,28 +180,29 @@ if __name__ == "__main__":
     else:
         input = get_input(task, batch)
 
-    # while True:
-    #     start_time = time.time()
-    #     if task == 'bert':
-    #         output= model.run(input,masks,0,12).cpu()
-    #     elif task == 'deeplabv3':
-    #         output= model(input)['out'].cpu()
-    #     else:
-    #         output=model(input).cpu()
-    #     end_time = time.time()
+    while True:
+        start_time = time.time()
+        if task == 'bert':
+            output= model.run(input,masks,0,12).cpu()
+        elif task == 'deeplabv3':
+            output= model(input)['out'].cpu()
+        else:
+            output=model(input).cpu()
+        end_time = time.time()
+        print(end_time - start_time)
         
 
-    start_time = time.time()
-    if task == 'bert':
-        output= model.run(input,masks,0,12).cpu()
-    elif task == 'deeplabv3':
-        output= model(input)['out'].cpu()
-    else:
-        output=model(input).cpu()
-    end_time = time.time()
+    # start_time = time.time()
+    # if task == 'bert':
+    #     output= model.run(input,masks,0,12).cpu()
+    # elif task == 'deeplabv3':
+    #     output= model(input)['out'].cpu()
+    # else:
+    #     output=model(input).cpu()
+    # end_time = time.time()
 
     
-        # print(end_time - start_time)
+      
         # with open(path, 'a+') as file:
         #     output = str(end_time - start_time) + "\n"
         #     file.write(output)
