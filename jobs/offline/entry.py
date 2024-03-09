@@ -156,11 +156,9 @@ if __name__ == "__main__":
         initialize = 0
     entry = model_dic.get(task)
     
-    start_time = time.time()
     # result = entry(epoch)
     result = entry(epoch=epoch, initialize=int(initialize), item = item)
-    end_time = time.time()
-    print(end_time - start_time)
+    print(result)
     
 
 
