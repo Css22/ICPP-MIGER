@@ -1009,7 +1009,6 @@ class woker:
                     if self.cluster_algorithm == 'me':
                         gpu_index =-1
                         for i in range(0, len(self.GPU_list)):
-                            jobs = []
                             for j in range(0, len(self.GPU_list[i])):
                                 for z in self.GPU_list[i][j]:
                                     jobs.append(z)
@@ -1022,6 +1021,10 @@ class woker:
                                     gpu_index = i
                                     flag = True
                                     break 
+                        jobs = []
+                        for j in range(0, len(self.GPU_list[gpu_index])):
+                            for z in self.GPU_list[i][j]:
+                                jobs.append(z)
                         jobs.remove(tmp_job)
 
                         if flag:
