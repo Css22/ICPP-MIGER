@@ -2,6 +2,14 @@
 
 2: 利用envs Abacus文件夹进行迁移
     packaging.version.InvalidVersion: Invalid version: '0.10.1,<0.11' ::: pip install --upgrade transformers
+    # Use python explicitly to grab info. 
+    python -m spacy info
+
+    # Just confirm the versions via pip too
+    python -m pip freeze | grep spacy
+
+    # Download the en_core_web_sm model explicitly 
+    python -m spacy download en_core_web_sm
     通过scp 命令传递数据集
 3: 运行test.sh检测环境是否正确
     这需要修改online 任务的 entry.
