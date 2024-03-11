@@ -1008,18 +1008,16 @@ class woker:
                         return 0
                     if self.cluster_algorithm == 'me':
                         gpu_index =-1
-                
+                        tmp_job = None
                         for i in range(0, len(self.GPU_list)):
                             for j in range(0, len(self.GPU_list[i])):
                                 for z in self.GPU_list[i][j]:
-                                    tmp_job = None
                                     if int(z.jobid) == int(jobid):
                                         tmp_job = z
                                         gpu_index = i
                                         flag = True
                                         print("job finish")
                                         break 
-                        print(gpu_index)
                         jobs = []
                         for j in range(0, len(self.GPU_list[gpu_index])):
                             for z in self.GPU_list[gpu_index][j]:
