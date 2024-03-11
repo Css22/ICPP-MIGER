@@ -1,7 +1,11 @@
 {
     "0": "online_resnet50_32_50",
     "1": "online_resnet50_32_50",
-    "2": "offline_resnet50_2",
-    "3": "offline_GAN_3",
-    "4": "offline_GAN_3"
+    "2": "online_resnet50_32_50",
+    "3": "online_resnet50_32_50",
+    "4": "offline_resnet50_2",
+    "5": "offline_GAN_3",
+    "6": "offline_GAN_3",
+    "7": "offline_GAN_3",
+    "8": "offline_GAN_3"
 }

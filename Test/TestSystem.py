@@ -95,6 +95,8 @@ def test_running():
     job_list = []
     online_job1 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=0)
     online_job2 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=1)
+    online_job1 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=0)
+    online_job2 = online_job(model_name='resnet50', batch_Size=32, qos=50, jobid=1)
     offline_job1 =  offline_job(model_name='resnet50', batch_Size=32, epoch=5, jobid=3)
 
 

@@ -23,7 +23,10 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 # TestSystem.testForAllocateAvaliable()
 
 # TestSystem.test_job_finish()
-TestForSimulator.TestForFunction()
-TestForSimulator.TestForSimulator()
+# TestForSimulator.TestForFunction()
+# TestForSimulator.TestForSimulator()
 # TestSystem.test_online_job_migration()
 # TestJobAnalysis.test_job_metrices()
+
+
+TestSystem.test_running()

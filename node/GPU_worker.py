@@ -37,7 +37,7 @@ monitor_table = {
 ip='10.16.56.14'
 port=50052
 node = socket.gethostname()
-num_GPU = 1
+num_GPU = 2
 online_job_data = []
 config_map = {7:"1c-7g-80gb", 4:"1c-4g-40gb", 3:"1c-3g-40gb", 2:"1c-2g-20gb", 1:"1c-1g-10gb"}
 global_config_list = [[7], [4,3], [4,2,1], [4,1,1,1], [3,3], [3,2,1], [3,1,1,1],[2,2,3], [2,1,1,3], [1,1,2,3], [1,1,1,1,3], [2,2,2,1], [2,1,1,2,1],[1,1,2,2,1],[2,1,1,1,1,1],
@@ -93,6 +93,7 @@ class woker:
         self.update_thread.start()
 
     def node_schedule(self, new_job, gpu_id):
+        gpu_id = int(gpu_id)
         with temp_lock:
             jobs = []
             for i in self.GPU_list[gpu_id]:
@@ -138,6 +139,7 @@ class woker:
 
                     elif isinstance(new_job, offline_job):
                         throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
+                        print(self.throughput[gpu_id], throught_put)
                         if throught_put < self.throughput[gpu_id]:
                             jobs.remove(new_job)
                             self.partition_optimizer(jobs, gpu_id)
@@ -1023,8 +1025,8 @@ class woker:
                         jobs.remove(tmp_job)
 
                         if flag:
-                            self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)
-                            self.sorted(gpu_index)
+                            self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)[0]
+                            self.sorted(gpu_index) 
                             order_list = self.migrate_order(gpu_index)
                
                             self.termination(gpu_index)
