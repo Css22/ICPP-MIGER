@@ -139,7 +139,7 @@ class woker:
 
                     elif isinstance(new_job, offline_job):
                         throught_put, best_config_migrate = self.partition_optimizer(jobs, gpu_id)
-                        print(self.throughput[gpu_id], throught_put)
+                    
                         if throught_put < self.throughput[gpu_id]:
                             jobs.remove(new_job)
                             self.partition_optimizer(jobs, gpu_id)
@@ -1008,44 +1008,43 @@ class woker:
                         return 0
                     if self.cluster_algorithm == 'me':
                         gpu_index =-1
+                
                         for i in range(0, len(self.GPU_list)):
                             for j in range(0, len(self.GPU_list[i])):
                                 for z in self.GPU_list[i][j]:
-                                    jobs.append(z)
-
-                            flag = False
-                            tmp_job = None
-                            for j in jobs:
-                                if j.jobid == jobid:
-                                    tmp_job = j
-                                    gpu_index = i
-                                    flag = True
-                                    break 
+                                    tmp_job = None
+                                    if int(z.jobid) == int(jobid):
+                                        tmp_job = z
+                                        gpu_index = i
+                                        flag = True
+                                        print("job finish")
+                                        break 
+                        print(gpu_index)
                         jobs = []
                         for j in range(0, len(self.GPU_list[gpu_index])):
-                            for z in self.GPU_list[i][j]:
+                            for z in self.GPU_list[gpu_index][j]:
                                 jobs.append(z)
+                            
                         jobs.remove(tmp_job)
 
-                        if flag:
-                            self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)[0]
-                            self.sorted(gpu_index) 
-                            order_list = self.migrate_order(gpu_index)
+                        self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)[0]
+                        self.sorted(gpu_index) 
+                        order_list = self.migrate_order(gpu_index)
                
-                            self.termination(gpu_index)
+                        self.termination(gpu_index)
                          
-                            if order_list:
-                                self.do_migrate(gpu_id=gpu_index, order_list=order_list)
-                            self.creation(gpu_index)
+                        if order_list:
+                            self.do_migrate(gpu_id=gpu_index, order_list=order_list)
+                        self.creation(gpu_index)
 
                             # self.throughput[gpu_index] = self.partition_optimizer(jobs=jobs, GPU_index=gpu_index)
                             # self.sorted(gpu_index)
                             # self.termination(gpu_index)
                             # self.creation(gpu_index)
-                            JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
-                                type ='finish', JobID = jobid
-                            ))
-                            return 0
+                        JobState = stub.JobState(server_scherduler_pb2.JobStateMessage(
+                            type ='finish', JobID = jobid
+                        ))
+                        return 0
 
             
             if p.returncode == 143  or -15:

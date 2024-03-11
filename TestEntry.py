@@ -7,7 +7,7 @@ import Test.TestJobAnalysis as TestJobAnalysis
 import Test.TestForSimulator as TestForSimulator
 import util.MIG_operator as MIG_operator
 import util.MPS_operator as MPS_operator
-UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
+UUID = 'MIG-47166aa1-8a66-5cba-a964-8dbcf1697934'
 
 
 # TestForExecutor.test_main()
@@ -29,4 +29,5 @@ UUID = 'MIG-e806816b-27b9-54dd-87dd-c52b4e695397'
 # TestJobAnalysis.test_job_metrices()
 
 
-TestSystem.test_running()
+# TestSystem.test_running()
+MPS_operator.CloseMPS(UUID)
