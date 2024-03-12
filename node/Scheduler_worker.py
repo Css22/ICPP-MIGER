@@ -98,6 +98,7 @@ def schedule(jobid):
 
 def start_cluster():
     jobs = generate_jobs()
+    generate_job_progress_table(jobs)
     time.sleep(20)
 
     for i in jobs:
