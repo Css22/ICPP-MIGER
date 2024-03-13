@@ -189,7 +189,6 @@ if __name__ == "__main__":
         else:
             output=model(input).cpu()
         end_time = time.time()
-        print(end_time - start_time)
         
 
     # start_time = time.time()
