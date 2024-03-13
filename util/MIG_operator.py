@@ -73,7 +73,7 @@ def create_ins_with_ID(gpu, ins, req_ID):
             for i in tem_ID_list:
                 destroy_ins(gpu, i)
             print(f"create instance with ID {req_ID}")
-            if node == 'lab04' and int(gpu) == 2:
+            if node == 'hpclab04' and int(gpu) == 2:
                 ID = map_table[int(ID)]
             return ID
         else:
