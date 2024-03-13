@@ -24,10 +24,10 @@ UUID = 'MIG-47166aa1-8a66-5cba-a964-8dbcf1697934'
 
 # TestSystem.test_job_finish()
 # TestForSimulator.TestForFunction()
-# TestForSimulator.TestForSimulator()
+TestForSimulator.TestForSimulator()
 # TestSystem.test_online_job_migration()
 # TestJobAnalysis.test_job_metrices()
 
 
 # TestSystem.test_running()
-MPS_operator.CloseMPS(UUID)
+# MPS_operator.CloseMPS(UUID)

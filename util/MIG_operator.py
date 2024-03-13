@@ -57,14 +57,14 @@ def create_ins(gpu, ins):
     return ID
 
 def destroy_ins(gpu, ID):
-    if node == 'lab04' and gpu == 2:
+    if node == 'lab04' and int(2) == 2:
         ID = reversed_map_table[int(ID)]
     cmd = f'sudo nvidia-smi mig -dci -i {gpu} -gi {ID} -ci 0 && sudo nvidia-smi mig -dgi -i {gpu} -gi {ID}'
     p = subprocess.Popen([cmd], shell=True)
     p.wait()
 
 def create_ins_with_ID(gpu, ins, req_ID):
-    if node == 'lab04' and gpu == 2:
+    if node == 'lab04' and int(2) == 2:
         req_ID = map_table(int(req_ID))
     tem_ID_list = []
     while True:

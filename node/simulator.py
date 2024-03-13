@@ -32,6 +32,7 @@ class simulator:
         self.simulate()
 
     def simulate(self):
+    
         for i in range(0, self.GPU_num):
             self.busy.append(0)
 
@@ -143,6 +144,7 @@ class simulator:
 
 
             for i in self.online_jobs:
+               
                 gpu_id = self.get_minworkload(node1)
                 node1.simulator_schedule(i, gpu_id)
                 self.simulate_executor(i)
@@ -153,6 +155,7 @@ class simulator:
             #     I_search_solution(scheduler.GPU_list[i], scheduler.config_list[i])
             
             for j in self.offline_jobs:
+               
                 gpu_id = self.get_minworkload(node1)
                 if node1.simulator_schedule(j, gpu_id):
                     j.start_time = 0 
@@ -190,7 +193,7 @@ class simulator:
             #     print(i)
             while True:
                 num = num + 1
-                
+                print(num)
                 for i in range(0, len(node1.GPU_list)):
                    
                     remove_jobs = []
@@ -223,7 +226,7 @@ class simulator:
                          
                             z.end_time = num
                             job_list.append(z)
-                            # print(len(job_list), self.num)
+                            print(len(job_list), self.num)
                             self.state_change(node1, i, z)
                      
                        
@@ -390,9 +393,11 @@ class simulator:
         JCT = 0
         makespan = 0
         num = len(jobs)
+        JCT_list = []
         for i in jobs:
             avarage_queue_time = avarage_queue_time + int(i.start_time) - int(i.submit_time)
             JCT = JCT + int(i.end_time) - int(i.submit_time)
+            JCT_list.append(int(i.end_time) - int(i.submit_time))
             if int(i.end_time) > makespan:
                 makespan = i.end_time
         
@@ -403,7 +408,7 @@ class simulator:
         print("avarage_queue_time : ", avarage_queue_time)
         print("JCT: ", JCT)
         print("makespan: ", makespan)
-
+        return JCT_list
     def simulate_executor(self, job):
 
         job.gi_id = job.new_gi_id
@@ -481,14 +486,14 @@ class simulator:
 def offline_job_generator(num):
     
     # job_list = ["GAN","transformer","bert","resnet50","resnet152","mobilenet","deeplabv3","SqueezeNet","unet","vit"]
-    job_list = ["GAN","resnet50","bert"]
+    job_list = ["GAN","resnet50","bert"] 
     epoch_num = [100,200,300]
     offline_job_list = []
     for i in range(0, num):
         # random_ID = random.randint(1, 1000000)
         random_model = random.choice(job_list)
         random_epoch = random.choice(epoch_num)
-        random_epoch = random_epoch
+        random_epoch = random.randint(10, 1000)
         offline_job_list.append(offline_job(random_model, batch_Size=None, epoch=random_epoch))
     return offline_job_list
 
