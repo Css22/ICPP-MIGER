@@ -1,8 +1,11 @@
 import subprocess
 import time
 import re
+import socket
+node = socket.gethostname()
 Configurations_map = {1: '1g.10gb', 2 : '2g.20gb' , 3: '3g.40gb', 4: '4g.40gb', 7: '7g.80gb'}
-
+map_table = {0:0, 2:1, 1:2, 5:3 , 6:4, 3:5, 11:7, 12:8, 13:9, 14:10, 7:11, 8:12, 9:13}
+reversed_map_table = {0:0, 1:2, 2:1, 3:5, 4:6, 5:3, 7:11, 8:12, 9:13, 10:14, 11:7, 12:8, 13:9}
 def init_mig():
     for gpu in range(2):
         cmd = f'./enable_mig.sh {gpu}'
@@ -38,7 +41,6 @@ def reset_mig(gpu):
     p.wait()
 
 def create_ins(gpu, ins):
-    print(ins)
     id_map = {'1c-1g-10gb': 19, '1c-2g-20gb': 14, '1c-3g-40gb': 9, '1c-4g-40gb': 5, '1c-7g-80gb': 0}
     ins_code = id_map[ins]
     cmd = f'sudo nvidia-smi mig -i {gpu} -cgi {ins_code} -C'
@@ -55,11 +57,15 @@ def create_ins(gpu, ins):
     return ID
 
 def destroy_ins(gpu, ID):
+    if node == 'lab04' and gpu == 2:
+        ID = reversed_map_table[int(ID)]
     cmd = f'sudo nvidia-smi mig -dci -i {gpu} -gi {ID} -ci 0 && sudo nvidia-smi mig -dgi -i {gpu} -gi {ID}'
     p = subprocess.Popen([cmd], shell=True)
     p.wait()
 
 def create_ins_with_ID(gpu, ins, req_ID):
+    if node == 'lab04' and gpu == 2:
+        req_ID = map_table(int(req_ID))
     tem_ID_list = []
     while True:
         ID = create_ins(gpu, ins)
@@ -67,6 +73,8 @@ def create_ins_with_ID(gpu, ins, req_ID):
             for i in tem_ID_list:
                 destroy_ins(gpu, i)
             print(f"create instance with ID {req_ID}")
+            if node == 'lab04' and gpu == 2:
+                ID = reversed_map_table[int(ID)]
             return ID
         else:
             tem_ID_list.append(ID)

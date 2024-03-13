@@ -1,6 +1,7 @@
 import glob
 import json
 import psutil
+import socket
 from datetime import datetime
 class job:
     def __init__(self, model_name, config, batch_Size, average_time, tail, jobid=0):
@@ -203,8 +204,6 @@ class TreeNode:
         if self.father != None:
             self.father.flag = True
             self.father.change_father()
-
-
 
 
 
@@ -799,7 +798,6 @@ def check_process_running(pid):
         if process.is_running():
             return True
     return False
-
 
 
 

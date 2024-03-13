@@ -134,6 +134,8 @@ class woker:
                 
             if self.cluster_algorithm == 'me':
                 if len(jobs) <= self.max_job_per_GPU: 
+                    
+
                     if(not self.partition_optimizer(jobs, gpu_id)[0]):
                         return False
 
@@ -588,6 +590,8 @@ class woker:
     
 
     def termination(self, gpu_id):
+      
+
         try:
             for i in self.GPU_list[gpu_id]:
                 if len(i) == 1:
@@ -624,7 +628,7 @@ class woker:
         for i in UUID_table[gpu_id].keys():
             
             if int(UUID_table[gpu_id][i]) not in fix_partition:
-
+                
                 destory_partition.append(UUID_table[gpu_id][i])
         
         for i in destory_partition:
