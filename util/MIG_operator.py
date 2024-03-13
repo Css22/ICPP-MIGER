@@ -46,7 +46,7 @@ def create_ins(gpu, ins):
     p.wait()
     read = str(p.stdout.read())
     ID = re.findall(r'\d+', read)[0]
-    print(f"create instance with ID {ID}")
+    print(f"create instance with ID {ID} with GPU ID {gpu}")
     # need to retrieve GPU instance ID from output
     # cmd = f'sudo nvidia-smi mig -i {gpu} -gi {ID} -cci'
     # p = subprocess.Popen([cmd], shell=True)
